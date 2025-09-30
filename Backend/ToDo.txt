@@ -1,0 +1,6 @@
+﻿Navbar
+Calender
+Project menagement
+Authentication
+Google search
+Maby birds in the home page, so it is not static

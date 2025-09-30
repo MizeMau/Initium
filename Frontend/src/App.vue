@@ -1,17 +1,13 @@
 <template>
   <div>
-    <h1>You did it!</h1>
-    <p>
-      Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-      documentation
-    </p>
+    <router-view />
 
-    <div v-if="loading">Loading...</div>
+    <!--<div v-if="loading">Loading...</div>
     <div v-else-if="error">Error: {{ error }}</div>
     <div v-else>
       <h2>API Response:</h2>
       <pre>{{ data }}</pre>
-    </div>
+    </div>-->
   </div>
 </template>
 
