@@ -69,6 +69,14 @@ _-'.-.-.-.-.-. .---.-. .-------------------------. .-.---. .---.-.-.-.\`-_
         if (e.ctrlKey && key.toLowerCase() == 'c') {
           this.inputBuffer = '|   |   C:\\>                                                                           |    |'
         }
+        if (key == "Enter") {
+          const query = this.inputBuffer
+            .substring(13, 87)
+            .trim()
+            .replaceAll('_', ' ')
+          const uriQuery = encodeURIComponent(query)
+          window.open(`https://www.google.com/search?q=${uriQuery}`, '_self')
+        }
       }
     },
   }
