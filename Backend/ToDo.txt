@@ -3,4 +3,5 @@ Calender
 Project menagement
 Authentication
 Google search
+Google autocomplete suggestions select with arrow key
 Maby birds in the home page, so it is not static

@@ -1,39 +1,46 @@
 ﻿<template>
   <div class="container">
-    <pre class="ascii">{{ asciiDesktopTop }}<br />{{ inputBuffer }}<br />{{ asciiDesktopBottom }}</pre>
+    <pre class="ascii">
+{{ asciiDesktopTop }}
+{{ inputBuffer }}
+{{ asciiDesktopScreen }}
+{{ asciiDesktopBottom }}</pre>
     <pre class="ascii">{{ asciiKeyboard }}</pre>
   </div>
 </template>
 
 <script>
+  import Autocomplete from "@/service/google/autocomplete"
+
+  import { useDebounceFn } from "@vueuse/core"
+
   export default {
     name: 'AsciiArt',
     data() {
       return {
-        inputBuffer: '|   |   C:\\>                                                                           |    |',
-        asciiDesktopTop: `__________________________________________________________________________________________
-/                                                                                          \\
-|    __________________________________________________________________________________     |
-|   |                                                                                  |    |
-|   |                                                                                  |    |`,
-
-        asciiDesktopBottom: `|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |                                                                                  |    |
-|   |__________________________________________________________________________________|    |
-|                                                                                           |
+        inputBuffer: '|   |   C:\\>                                                                           |   |',
+        asciiDesktopTop: `_________________________________________________________________________________________
+/                                                                                         \\
+|    __________________________________________________________________________________    |
+|   |                                                                                  |   |
+|   |                                                                                  |   |`,
+        asciiDesktopScreen: `|   |                                                                                  |   |
+|   |                                                                                  |   |
+|   |                                                                                  |   |
+|   |                                                                                  |   |
+|   |                                                                                  |   |
+|   |                                                                                  |   |
+|   |                                                                                  |   |
+|   |                                                                                  |   |
+|   |                                                                                  |   |
+|   |                                                                                  |   |
+|   |                                                                                  |   |
+|   |                                                                                  |   |
+|   |                                                                                  |   |
+|   |                                                                                  |   |
+|   |                                                                                  |   |`,
+        asciiDesktopBottom: `|   |__________________________________________________________________________________|   |
+|                                                                                          |
 \\__________________________________________________________________________________________/
 \\____________________________________________________________________________/`,
         asciiKeyboard: `___________________________________________
@@ -101,21 +108,39 @@ _-'.-.-.-.-.-. .---.-. .-------------------------. .-.---. .---.-.-.-.\`-_
           "control": { index: 296, c: 3 },
           " ": { index: 304, c: 25 },
         },
+        autocompleteService: new Autocomplete(),
+        suggestions: []
       };
     },
     mounted() {
+      this.runAutocomplete = useDebounceFn(async (uriQuery) => {
+        var tempASCIIDesktopScreen = ''
+        if (uriQuery) {
+          const data = await this.autocompleteService.getAutocompleteByQuery(uriQuery)
+          this.suggestions = data
+          for (const suggestion of data) {
+            tempASCIIDesktopScreen += '|   |         · ' + suggestion + ' '.repeat(71 - suggestion.length) + '|   |\n'
+          }
+          tempASCIIDesktopScreen += '|   |                                                                                  |   |\n'.repeat(15 - data.length)
+        }
+        else {
+          tempASCIIDesktopScreen += '|   |                                                                                  |   |\n'.repeat(15)
+        }
+        this.asciiDesktopScreen = tempASCIIDesktopScreen.slice(0, -1)
+      }, 300)
+
       window.addEventListener('keydown', this.handleKeydown);
     },
     beforeDestroy() {
       window.removeEventListener('keydown', this.handleKeydown);
     },
     methods: {
-      handleKeydown(e) {
+      async handleKeydown(e) {
         this.highlightKey(e.key);
         // 85 spaces
         var key = e.key
         const count = (this.inputBuffer.match(/ /g) || []).length
-        const diff = 85 - count
+        const diff = 84 - count
         if (key === 'Backspace') {
           this.inputBuffer = this.inputBuffer.substring(0, 12 + diff) + ' ' + this.inputBuffer.substring(13 + diff)
         }
@@ -124,14 +149,16 @@ _-'.-.-.-.-.-. .---.-. .-------------------------. .-.---. .---.-.-.-.\`-_
           this.inputBuffer = this.inputBuffer.substring(0, 13 + diff) + key + this.inputBuffer.substring(13 + key.length + diff)
         }
         if (e.ctrlKey && key.toLowerCase() == 'c') {
-          this.inputBuffer = '|   |   C:\\>                                                                           |    |'
+          this.inputBuffer = '|   |   C:\\>                                                                           |   |'
         }
+        const query = this.inputBuffer
+          .substring(13, 87)
+          .trim()
+          .replaceAll('_', ' ')
+        console.log('query', query)
+        const uriQuery = encodeURIComponent(query)
+        this.runAutocomplete(uriQuery)
         if (key == "Enter") {
-          const query = this.inputBuffer
-            .substring(13, 87)
-            .trim()
-            .replaceAll('_', ' ')
-          const uriQuery = encodeURIComponent(query)
           window.open(`https://www.google.com/search?q=${uriQuery}`, '_self')
         }
       },
