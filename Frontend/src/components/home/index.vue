@@ -1,192 +1,191 @@
 ﻿<template>
-  <div class="container">
-    <pre class="ascii">
-{{ asciiDesktopTop }}
-{{ inputBuffer }}
-{{ asciiDesktopScreen }}
-{{ asciiDesktopBottom }}</pre>
-    <pre class="ascii">{{ asciiKeyboard }}</pre>
+  <div class="homepage">
+    <!-- Search Section -->
+    <section class="search-section">
+      <div class="search-box">
+        <input ref="googleSearchBar"
+               type="text"
+               placeholder="Search Google..."
+               v-model="query"
+               @input="googleSearchInput" />
+        <button class="search-btn"
+                @click="suggestionClick(query)">🐱</button>
+      </div>
+
+      <!-- Suggestions (Mockup) -->
+      <ul v-if="suggestions.length > 0" class="suggestions">
+        <li v-for="(suggestion, index) in suggestions"
+            :key="`suggestion_${index}`"
+            @click="suggestionClick(suggestion)"
+            :class="{'suggestions-li-selected': selectedSuggestion == index}">
+          <b v-if="suggestion.hasQuery">{{tmpQuery}}</b>{{suggestion.query}}
+        </li>
+      </ul>
+    </section>
+
+    <calender-component />
   </div>
 </template>
 
 <script>
+  import CalenderComponent from './calendar.vue'
+
   import Autocomplete from "@/service/google/autocomplete"
 
   import { useDebounceFn } from "@vueuse/core"
 
   export default {
-    name: 'AsciiArt',
-    data() {
-      return {
-        inputBuffer: '|   |   C:\\>                                                                           |   |',
-        asciiDesktopTop: `_________________________________________________________________________________________
-/                                                                                         \\
-|    __________________________________________________________________________________    |
-|   |                                                                                  |   |
-|   |                                                                                  |   |`,
-        asciiDesktopScreen: `|   |                                                                                  |   |
-|   |                                                                                  |   |
-|   |                                                                                  |   |
-|   |                                                                                  |   |
-|   |                                                                                  |   |
-|   |                                                                                  |   |
-|   |                                                                                  |   |
-|   |                                                                                  |   |
-|   |                                                                                  |   |
-|   |                                                                                  |   |
-|   |                                                                                  |   |
-|   |                                                                                  |   |
-|   |                                                                                  |   |
-|   |                                                                                  |   |
-|   |                                                                                  |   |`,
-        asciiDesktopBottom: `|   |__________________________________________________________________________________|   |
-|                                                                                          |
-\\__________________________________________________________________________________________/
-\\____________________________________________________________________________/`,
-        asciiKeyboard: `___________________________________________
-_-'    .-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.  --- \`-_
-_-'.-.-. .---.-.-.-.-.-.-.-.-.-.-.-.-.-.-.--.  .-.-.\`-_
-_-'.-.-.-. .---.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-\`__\`. .-.-.-.\`-_
-_-'.-.-.-.-. .-----.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-----. .-.-.-.-.\`-_
-_-'.-.-.-.-.-. .---.-. .-------------------------. .-.---. .---.-.-.-.\`-_
-: -------------------------------------------------------------------------:
-\`---._.-------------------------------------------------------------._.---'`,
-        keyMap: {
-          "1": { index: 52, c: 1 },
-          "2": { index: 54, c: 1 },
-          "3": { index: 56, c: 1 },
-          "4": { index: 58, c: 1 },
-          "5": { index: 60, c: 1 },
-          "6": { index: 62, c: 1 },
-          "7": { index: 64, c: 1 },
-          "8": { index: 66, c: 1 },
-          "9": { index: 68, c: 1 },
-          "0": { index: 70, c: 1 },
-          "ß": { index: 72, c: 1 },
-          "´": { index: 74, c: 1 },
-
-          q: { index: 108, c: 1 },
-          w: { index: 110, c: 1 },
-          e: { index: 112, c: 1 },
-          r: { index: 114, c: 1 },
-          t: { index: 116, c: 1 },
-          z: { index: 118, c: 1 },
-          u: { index: 120, c: 1 },
-          i: { index: 122, c: 1 },
-          o: { index: 124, c: 1 },
-          p: { index: 126, c: 1 },
-          ü: { index: 128, c: 1 },
-          "+": { index: 130, c: 1 },
-
-          a: { index: 166, c: 1 },
-          s: { index: 168, c: 1 },
-          d: { index: 170, c: 1 },
-          f: { index: 172, c: 1 },
-          g: { index: 174, c: 1 },
-          h: { index: 176, c: 1 },
-          j: { index: 178, c: 1 },
-          k: { index: 180, c: 1 },
-          l: { index: 182, c: 1 },
-          ö: { index: 184, c: 1 },
-          ä: { index: 186, c: 1 },
-          "#": { index: 188, c: 1 },
-
-          "<": { index: 232, c: 1 },
-          y: { index: 234, c: 1 },
-          x: { index: 236, c: 1 },
-          c: { index: 238, c: 1 },
-          v: { index: 240, c: 1 },
-          b: { index: 242, c: 1 },
-          n: { index: 244, c: 1 },
-          m: { index: 246, c: 1 },
-          ",": { index: 248, c: 1 },
-          ".": { index: 250, c: 1 },
-          "-": { index: 252, c: 1 },
-
-          "backspace": { index: 86, c: 3 },
-          "shift": { index: 226, c: 5 },
-          "control": { index: 296, c: 3 },
-          " ": { index: 304, c: 25 },
-        },
-        autocompleteService: new Autocomplete(),
-        suggestions: []
-      };
+    name: "HomePage",
+    components: {
+      'calender-component': CalenderComponent
     },
     mounted() {
       this.runAutocomplete = useDebounceFn(async (uriQuery) => {
-        var tempASCIIDesktopScreen = ''
-        if (uriQuery) {
-          const data = await this.autocompleteService.getAutocompleteByQuery(uriQuery)
-          this.suggestions = data
-          for (const suggestion of data) {
-            tempASCIIDesktopScreen += '|   |         · ' + suggestion + ' '.repeat(71 - suggestion.length) + '|   |\n'
+        if (!uriQuery) {
+          this.suggestions = []
+          return
+        }
+        const data = await this.autocompleteService.getAutocompleteByQuery(uriQuery)
+        this.tmpQuery = this.query.trim()
+        this.selectedSuggestion = null
+        this.suggestions = data.map(m => {
+          console.log('suggestion', m)
+          return {
+            hasQuery: m.includes(this.tmpQuery),
+            query: m.replace(this.tmpQuery, ''),
           }
-          tempASCIIDesktopScreen += '|   |                                                                                  |   |\n'.repeat(15 - data.length)
-        }
-        else {
-          tempASCIIDesktopScreen += '|   |                                                                                  |   |\n'.repeat(15)
-        }
-        this.asciiDesktopScreen = tempASCIIDesktopScreen.slice(0, -1)
+        })
       }, 300)
 
       window.addEventListener('keydown', this.handleKeydown);
+
+      this.$refs.googleSearchBar.focus();
     },
     beforeDestroy() {
       window.removeEventListener('keydown', this.handleKeydown);
     },
+    data() {
+      return {
+        query: "",
+        tmpQuery: "",
+        suggestions: [],
+        selectedSuggestion: null,
+        autocompleteService: new Autocomplete(),
+      }
+    },
     methods: {
-      async handleKeydown(e) {
-        this.highlightKey(e.key);
-        // 85 spaces
-        var key = e.key
-        const count = (this.inputBuffer.match(/ /g) || []).length
-        const diff = 84 - count
-        if (key === 'Backspace') {
-          this.inputBuffer = this.inputBuffer.substring(0, 12 + diff) + ' ' + this.inputBuffer.substring(13 + diff)
-        }
-        if (key.length === 1 || key.includes('^')) {
-          if (key == ' ') key = '_'
-          this.inputBuffer = this.inputBuffer.substring(0, 13 + diff) + key + this.inputBuffer.substring(13 + key.length + diff)
-        }
-        if (e.ctrlKey && key.toLowerCase() == 'c') {
-          this.inputBuffer = '|   |   C:\\>                                                                           |   |'
-        }
-        const query = this.inputBuffer
-          .substring(13, 87)
-          .trim()
-          .replaceAll('_', ' ')
-        console.log('query', query)
-        const uriQuery = encodeURIComponent(query)
+      async googleSearchInput() {
+        const uriQuery = encodeURIComponent(this.query)
         this.runAutocomplete(uriQuery)
-        if (key == "Enter") {
-          window.open(`https://www.google.com/search?q=${uriQuery}`, '_self')
+      },
+      suggestionClick(query) {
+        if(!query) return
+        const uriQuery = encodeURIComponent(query)
+        window.open(`https://www.google.com/search?q=${uriQuery}`, '_self')
+      },
+      async handleKeydown(e) {
+        const key = e.key
+        if (key == 'ArrowUp') {
+          if (this.selectedSuggestion <= 0) return
+          this.selectedSuggestion--
+          const suggestion = this.suggestions[this.selectedSuggestion]
+          this.query = suggestion.hasQuery ? this.tmpQuery + suggestion.query : suggestion.query
         }
-      },
-      highlightKey(key) {
-        const keyInfo = this.keyMap[key.toLowerCase()];
-        if (!keyInfo) return;
-        this.asciiKeyboard = this.asciiKeyboard.substring(0, keyInfo.index) + '_'.repeat(keyInfo.c) + this.asciiKeyboard.substring(keyInfo.index + keyInfo.c)
-        setTimeout(() => {
-          this.asciiKeyboard = this.asciiKeyboard.substring(0, keyInfo.index) + '-'.repeat(keyInfo.c) + this.asciiKeyboard.substring(keyInfo.index + keyInfo.c)
-        }, 150);
-      },
+        if (key == 'ArrowDown') {
+          if (this.selectedSuggestion == null) this.selectedSuggestion = -1
+          if (this.selectedSuggestion >= this.suggestions.length - 1) return
+          this.selectedSuggestion++
+          const suggestion = this.suggestions[this.selectedSuggestion]
+          this.query = suggestion.hasQuery ? this.tmpQuery + suggestion.query : suggestion.query
+        }
+        if (key == "Enter") {
+          this.suggestionClick(this.query)
+        }
+      }
     },
   }
 </script>
 
 <style scoped>
-  .container {
-    width: 100%;
-    height: 98vh;
-    align-content: center;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Courier New', monospace;
+  /* General Layout */
+  .homepage {
+    color: #ddd;
+    background: linear-gradient(135deg, #1a1a1a, #121212);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: "Fira Code", monospace;
   }
 
-  .ascii {
-    color: lime;
-    font-size: 150%;
-    line-height: 120%;
-    margin: 0;
-    text-align: center;
+  .search-box {
+    display: flex;
+    align-items: center;
+    background: #2c2c2c;
+    border-radius: 50px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    padding: 0.5rem 1rem;
   }
+
+    .search-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 0.7rem;
+      font-size: 1rem;
+      border-radius: 50px;
+      background: transparent;
+      color: #eee;
+    }
+
+  .search-btn {
+    background: #3a3a3a;
+    border: none;
+    color: #fbc531;
+    font-size: 1.2rem;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+  }
+
+  /* Search Section */
+  .search-section {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 2rem;
+    position: relative; /* <- important */
+    z-index: 5; /* keep it above calendar */
+    margin-top: 5rem;
+  }
+
+  .suggestions {
+    position: absolute; /* float over content */
+    top: 100%; /* right below search box */
+    left: 0;
+    right: 0;
+    background: #2b2b2b;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    list-style: none;
+    padding: 0.5rem 0;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 10; /* ensures overlap */
+  }
+
+    .suggestions li {
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+      color: #ccc;
+    }
+
+      .suggestions li:hover {
+        background: #3c3c3c;
+        color: #fff;
+      }
+      .suggestions-li-selected {
+        background: #3c3c3c;
+        color: #fff;
+      }
 </style>
