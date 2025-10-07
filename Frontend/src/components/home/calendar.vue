@@ -1,6 +1,20 @@
 ﻿<template>
   <div class="calendar-section" ref="calendar">
-    <h2>October 2025</h2>
+    
+    <h2>
+      <button class="search-btn"
+              style="margin-right: auto"
+              @click="subMonth">
+        ⬅
+      </button>
+      {{months[selectedMonth]}} {{selectedYear}}
+      <button class="search-btn"
+              style="margin-left: auto"
+              @click="addMonth">
+        ➡
+      </button>
+    </h2>
+    
 
     <div class="calendar">
       <!-- Weekday headers -->
@@ -8,10 +22,11 @@
 
       <!-- Dates -->
       <div class="date"
-           v-for="i in 31"
+           :class="{'currentMonth': selectedMonth == i.date.getMonth()}"
+           v-for="i in selectedDays"
            :key="i"
            @click="toggleDay(i, $event)">
-        <div class="date-number">{{ i }}</div>
+        <div class="date-number">{{ i.date.getDate() }}</div>
         <span v-if="tasks[i]" class="task-dot"></span>
         <span v-else class="task-dot" style="opacity: 0"></span>
       </div>
@@ -37,7 +52,11 @@
       return {
         activeDay: null,
         popoverStyle: {},
-        days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        selectedMonth: 0,
+        selectedYear: 0,
+        selectedDays: [],
         tasks: {
           1: ["Fix bug 🐞", "Pet the cat 🐈"],
           5: ["Write documentation 📖", "Feed whiskers 🐾"],
@@ -47,21 +66,75 @@
         },
       };
     },
+    mounted() {
+      const date = new Date();
+      const month = date.getMonth()
+      const year = date.getFullYear()
+      this.changeCalenderDate(month, year)
+      this.selectedMonth = month
+      this.selectedYear = year
+    },
     methods: {
+      addMonth() {
+        this.selectedMonth++
+        if (this.selectedMonth > 11) {
+          this.selectedMonth = 0
+          this.selectedYear++
+        }
+        this.changeCalenderDate(this.selectedMonth, this.selectedYear)
+      },
+      subMonth() {
+        this.selectedMonth--
+        if (this.selectedMonth < 0) {
+          this.selectedMonth = 11
+          this.selectedYear--
+        }
+        this.changeCalenderDate(this.selectedMonth, this.selectedYear)
+      },
+      changeCalenderDate(month, year) {
+        this.selectedDays = []
+        this.activeDay = null;
+
+        var firstDay = new Date(year, month, 1).getDay()
+        firstDay = firstDay == 0 ? 6 : firstDay - 1
+        for (let i = firstDay - 1; i >= 0; i--) {
+          const date = new Date(year, month, -i)
+          this.selectedDays.push({
+            date
+          })
+        }
+
+        var daysOfMonth = new Date(year, month + 1, 0).getDate()
+        for (let i = 1; i <= daysOfMonth; i++) {
+          const date = new Date(year, month, i)
+          this.selectedDays.push({
+            date
+          })
+        }
+
+        var missingDates = 35 - this.selectedDays.length
+        missingDates = missingDates < 0 ? 42 - this.selectedDays.length : missingDates
+        for (let i = 1; i <= missingDates; i++) {
+          const date = new Date(year, month + 1, i)
+          this.selectedDays.push({
+            date
+          })
+        }
+      },
       toggleDay(day, event) {
         if (this.activeDay === day) {
           this.activeDay = null;
           return;
         }
-        this.activeDay = day;
+        this.activeDay = day.date.toLocaleDateString()
 
         this.$nextTick(() => {
           const dateEl = event.currentTarget.getBoundingClientRect();
           const calendarEl = this.$refs.calendar.getBoundingClientRect();
 
-          const popoverWidth = 300;
-          const margin = 8;
-          const popoverPadding = 16;
+          const popoverWidth = 300
+          const margin = 8
+          const popoverPadding = 16
 
           // Default to right side
           let left = dateEl.right - calendarEl.left + margin;
@@ -69,9 +142,7 @@
 
           // If not enough space to the right, place left
           if (left + popoverWidth > calendarEl.width) {
-            left = dateEl.left - calendarEl.left - popoverWidth - margin - popoverPadding * 2;
-            console.log('dateEl.left', dateEl.left);
-            console.log('calendarEl.left', calendarEl.left);
+            left = dateEl.left - calendarEl.left - popoverWidth - margin - popoverPadding * 2
           }
 
           this.popoverStyle = {
@@ -90,6 +161,16 @@
 </script>
 
 <style scoped>
+  .search-btn {
+    background: #3a3a3a;
+    color: #fbc531;
+    font-size: 1.2rem;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+  }
+
   .calendar-section {
     width: 80%;
     margin-top: 5rem;
@@ -105,6 +186,9 @@
       margin-bottom: 1.5rem;
       color: #fbc531;
       font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
   .calendar {
@@ -120,11 +204,16 @@
     font-size: 0.9rem;
   }
 
+  .currentMonth {
+    background: #2b2b2b !important;
+  }
+
   .date {
     text-align: center;
     padding: 1rem;
     border-radius: 10px;
-    background: #2b2b2b;
+    background: #232323;
+    /*background: #2b2b2b;*/
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
@@ -132,7 +221,8 @@
 
     .date:hover {
       background: #3a3a3a;
-      transform: translateY(-2px);
+      border: solid 1px #fbc531;
+      transform: translateY(-5px) translateX(5px);
     }
 
   .date-number {

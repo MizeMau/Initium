@@ -169,7 +169,6 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.4);
     list-style: none;
     padding: 0.5rem 0;
-    max-height: 300px;
     overflow-y: auto;
     z-index: 10; /* ensures overlap */
   }
