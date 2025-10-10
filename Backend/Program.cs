@@ -1,4 +1,8 @@
-﻿namespace Backend
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Security.Claims;
+
+namespace Backend
 {
     public class Program
     {
@@ -10,6 +14,36 @@
 
             builder.Services.AddControllers();
 
+            // Add authentication services
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/auth/login";
+                    options.LogoutPath = "/auth/logout";
+                    options.Cookie.Name = "InitiumAuth";
+                    options.Cookie.HttpOnly = true;
+                    options.Cookie.SameSite = SameSiteMode.Strict;
+                    options.ExpireTimeSpan = TimeSpan.FromDays(30); // session length
+                    options.SlidingExpiration = true; // refresh cookie expiry as user stays active
+                    options.Events = new CookieAuthenticationEvents
+                    {
+                        OnRedirectToLogin = ctx =>
+                        {
+                            // Return 401 instead of redirecting
+                            ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            return Task.CompletedTask;
+                        },
+                        OnRedirectToAccessDenied = ctx =>
+                        {
+                            // Return 403 instead of redirecting
+                            ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
+
+            builder.Services.AddAuthorization();
+
             // ✅ Enable CORS
             builder.Services.AddCors(options =>
             {
@@ -19,7 +53,8 @@
                         policy
                             .WithOrigins("http://localhost:5173")
                             .AllowAnyHeader()
-                            .AllowAnyMethod();
+                            .AllowAnyMethod()
+                            .AllowCredentials();
                     });
             });
 
@@ -27,8 +62,9 @@
 
             // Configure the HTTP request pipeline.
 
-            app.UseCors("AllowFrontend"); // ✅ Use CORS policy before auth
+            app.UseCors("AllowFrontend");
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

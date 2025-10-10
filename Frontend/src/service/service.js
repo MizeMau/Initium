@@ -1,14 +1,26 @@
 ﻿// Service.js
 import axios from 'axios';
+import router from '@/router';
 
 export default class Service {
     constructor(path) {
         this.api = axios.create({
             baseURL: 'http://localhost:5045' + path,
             headers: {
-                "Content-Type": 'application/json'
-            }
+                "Content-Type": 'application/json',
+            },
+            withCredentials: true,
         });
+        this.api.interceptors.response.use(
+            response => response,
+            error => {
+                if (error.response && error.response.status === 401) {
+                    // e.g. redirect to login route in your Vue app
+                    router.push('/login');
+                }
+                return Promise.reject(error);
+            }
+        );
     }
 
     async getAll(endpoint, params = {}) {
