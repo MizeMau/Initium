@@ -13,7 +13,8 @@ export const useUserStore = defineStore('user', () => {
         error.value = null
         try {
             const api = new userService()
-            const result = await api.login(username, password)
+            const hashedPassword = await hashPassword(password)
+            const result = await api.login(username, hashedPassword)
             user.value = result.data || result
         } catch (err) {
             console.error('Login failed:', err)
@@ -24,7 +25,17 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    async function hashPassword(password) {
+        const encoder = new TextEncoder()
+        const data = encoder.encode(password)
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+        const hashArray = Array.from(new Uint8Array(hashBuffer))
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+        return hashHex
+    }
+
     async function logout() {
+        console.log('logout')
         loading.value = true
         error.value = null
         try {
