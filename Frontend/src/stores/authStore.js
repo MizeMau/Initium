@@ -1,6 +1,7 @@
 ﻿// /src/stores/user.js
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
+import router from '@/router'
 import userService from '@/service/auth/user'
 
 export const useUserStore = defineStore('user', () => {
@@ -43,7 +44,7 @@ export const useUserStore = defineStore('user', () => {
             const result = await api.logout()
             user.value = null
         } catch (err) {
-            console.error('Login failed:', err)
+            console.error('logout failed:', err)
             error.value = err
         } finally {
             loading.value = false
@@ -58,6 +59,7 @@ export const useUserStore = defineStore('user', () => {
             user.value = result?.data || result
         } catch (err) {
             console.warn('Failed to fetch user:', err)
+            router.push('/login')
         }
     }
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <navbar-component v-if="this.userStore.user"/>
+    <navbar-component v-if="userStore.user"/>
     <div style="margin-left: 60px">
       <router-view />
     </div>
