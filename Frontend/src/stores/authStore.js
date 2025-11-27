@@ -41,7 +41,7 @@ export const useUserStore = defineStore('user', () => {
         try {
             const api = new userService()
             const result = await api.logout()
-            user.value = {}
+            user.value = null
         } catch (err) {
             console.error('Login failed:', err)
             error.value = err

@@ -1,7 +1,8 @@
 ﻿<template>
-  <div class="homepage">
+  <div class="container">
+    <div>test</div>
     <!-- Search Section -->
-    <section class="search-section">
+    <!--<section class="search-section">
       <div class="search-box">
         <input ref="googleSearchBar"
                type="text"
@@ -10,10 +11,10 @@
                @input="googleSearchInput" />
         <button class="search-btn"
                 @click="suggestionClick(query)">🐱</button>
-      </div>
+      </div>-->
 
       <!-- Suggestions (Mockup) -->
-      <ul v-if="suggestions.length > 0" class="suggestions">
+      <!--<ul v-if="suggestions.length > 0" class="suggestions">
         <li v-for="(suggestion, index) in suggestions"
             :key="`suggestion_${index}`"
             @click="suggestionClick(suggestion)"
@@ -21,24 +22,23 @@
           <b v-if="suggestion.hasQuery">{{tmpQuery}}</b>{{suggestion.query}}
         </li>
       </ul>
-    </section>
-
-    <calender-component />
+    </section>-->
+    <!--<calender-component />-->
   </div>
 </template>
 
 <script>
-  import CalenderComponent from './calendar.vue'
+  //import CalenderComponent from './calendar.vue'
 
-  import Autocomplete from "@/service/google/autocomplete"
+  import AutocompleteService from "@/service/google/autocomplete"
 
   import { useDebounceFn } from "@vueuse/core"
 
   export default {
     name: "HomePage",
-    components: {
-      'calender-component': CalenderComponent
-    },
+    //components: {
+    //  'calender-component': CalenderComponent
+    //},
     mounted() {
       this.runAutocomplete = useDebounceFn(async (uriQuery) => {
         if (!uriQuery) {
@@ -59,7 +59,7 @@
 
       window.addEventListener('keydown', this.handleKeydown);
 
-      this.$refs.googleSearchBar.focus();
+      //this.$refs.googleSearchBar.focus();
     },
     beforeDestroy() {
       window.removeEventListener('keydown', this.handleKeydown);
@@ -70,7 +70,7 @@
         tmpQuery: "",
         suggestions: [],
         selectedSuggestion: null,
-        autocompleteService: new Autocomplete(),
+        autocompleteService: new AutocompleteService(),
       }
     },
     methods: {
@@ -105,86 +105,3 @@
     },
   }
 </script>
-
-<style scoped>
-  /* General Layout */
-  .homepage {
-    color: #ddd;
-    background: linear-gradient(135deg, #1a1a1a, #121212);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-family: "Fira Code", monospace;
-  }
-
-  .search-box {
-    display: flex;
-    align-items: center;
-    background: #2c2c2c;
-    border-radius: 50px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    padding: 0.5rem 1rem;
-  }
-
-    .search-box input {
-      flex: 1;
-      border: none;
-      outline: none;
-      padding: 0.7rem;
-      font-size: 1rem;
-      border-radius: 50px;
-      background: transparent;
-      color: #eee;
-    }
-
-  .search-btn {
-    background: #3a3a3a;
-    border: none;
-    color: #fbc531;
-    font-size: 1.2rem;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-  }
-
-  /* Search Section */
-  .search-section {
-    width: 100%;
-    max-width: 600px;
-    margin-bottom: 2rem;
-    position: relative; /* <- important */
-    z-index: 5; /* keep it above calendar */
-    margin-top: 5rem;
-  }
-
-  .suggestions {
-    position: absolute; /* float over content */
-    top: 100%; /* right below search box */
-    left: 0;
-    right: 0;
-    background: #2b2b2b;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    list-style: none;
-    padding: 0.5rem 0;
-    overflow-y: auto;
-    z-index: 10; /* ensures overlap */
-  }
-
-    .suggestions li {
-      padding: 0.7rem 1rem;
-      cursor: pointer;
-      color: #ccc;
-    }
-
-      .suggestions li:hover {
-        background: #3c3c3c;
-        color: #fff;
-      }
-      .suggestions-li-selected {
-        background: #3c3c3c;
-        color: #fff;
-      }
-</style>

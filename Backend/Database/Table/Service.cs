@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Backend.Database.Table
 {
-    public class Service<T> where T : class
+    public class Service<T> where T : class, IDeleteable
     {
         protected static DBContext CreateContext()
         {
@@ -14,22 +14,20 @@ namespace Backend.Database.Table
         }
 
         protected DbContext _context;
-
-        public Service()
-        {
-
-        }
-
-        public virtual IQueryable<T> GetQuery()
+        public virtual IQueryable<T> GetQuery(bool withDeleted = false)
         {
             _context = CreateContext();
-            return _context.Set<T>().AsQueryable();
+            if (withDeleted)
+                return _context.Set<T>().AsQueryable();
+            return _context.Set<T>().Where(w => w.Deleted == null).AsQueryable();
         }
 
-        public virtual List<T> GetAll()
+        public virtual List<T> GetAll(bool withDeleted = false)
         {
             using var context = CreateContext();
-            return context.Set<T>().ToList();
+            if (withDeleted)
+                return _context.Set<T>().ToList();
+            return context.Set<T>().Where(w => w.Deleted == null).ToList();
         }
 
         public virtual T? GetById(long id)
@@ -41,6 +39,7 @@ namespace Backend.Database.Table
         public virtual T Create(T entity)
         {
             using var context = CreateContext();
+            entity.Created = DateTime.Now;
             context.Set<T>().Add(entity);
             context.SaveChanges();
             return entity;
@@ -54,15 +53,32 @@ namespace Backend.Database.Table
             return entity;
         }
 
-        public virtual bool Delete(long id)
+        public virtual bool Delete(long id, bool hard)
         {
             using var context = CreateContext();
             var entity = context.Set<T>().Find(id);
             if (entity == null) return false;
-
-            context.Set<T>().Remove(entity);
+            if (hard)
+            {
+                context.Set<T>().Remove(entity);
+            }
+            else
+            {
+                entity.Deleted = DateTime.Now;
+                context.Set<T>().Update(entity);
+            }
             context.SaveChanges();
             return true;
         }
+    }
+    public class BaseModel : IDeleteable
+    {
+        public DateTime Created { get; set; }
+        public DateTime? Deleted { get; set; }
+    }
+    public interface IDeleteable
+    {
+        public DateTime Created { get; set; }
+        public DateTime? Deleted { get; set; }
     }
 }

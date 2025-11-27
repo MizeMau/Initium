@@ -49,8 +49,8 @@ namespace Backend.Controllers
 
             var claims = new List<Claim>
             {
+                new Claim(ClaimTypes.NameIdentifier, user.BackendUserID.ToString()),
                 new Claim(ClaimTypes.Name, username),
-                new Claim("LastChanged", DateTime.UtcNow.ToString())
             };
 
             var claimsIdentity = new ClaimsIdentity(
@@ -67,7 +67,8 @@ namespace Backend.Controllers
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
 
-            return Ok(user);
+            var userDTO = new Database.Table.Backend.User.DTO(user);
+            return Ok(userDTO);
         }
 
         [HttpGet("user/logout")]
@@ -83,11 +84,18 @@ namespace Backend.Controllers
             if (!(User.Identity?.IsAuthenticated ?? false))
                 return Unauthorized();
 
-            return Ok(new
-            {
-                username = User.Identity.Name,
-                lastChanged = User.FindFirst("LastChanged")?.Value
-            });
+            var dbTableBackendUserService = new Database.Table.Backend.User.Service();
+            var userIDString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIDString == null)
+                return Unauthorized();
+
+            var userID = long.Parse(userIDString);
+            var user = dbTableBackendUserService.GetById(userID)!;
+            if (user.Deleted != null)
+                return Unauthorized();
+
+            var userDTO = new Database.Table.Backend.User.DTO(user);
+            return Ok(userDTO);
         }
     }
 }
