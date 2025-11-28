@@ -1,9 +1,21 @@
 ﻿<template>
   <div class="container">
-    <div>test</div>
-    <div class="row">
+    <div class="row mt-5">
       <div class="col-md-12">
-        <input class="form-control" />
+        <div class="input-group mb-3">
+          <input ref="googleSearchBar"
+                 type="text" 
+                 class="form-control"
+                 placeholder="Search Google..."
+                 v-model="query"
+                 v-on:input="googleSearchInput">
+          <button class="btn btn-primary">🐱</button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+
       </div>
     </div>
     <!-- Search Section -->
@@ -29,6 +41,15 @@
       </ul>
     </section>-->
     <!--<calender-component />-->
+  <div class="mt-5">
+    <ul v-if="suggestions.length > 0">
+      <li v-for="(suggestion, index) in suggestions"
+          :key="`suggestion_${index}`"
+          @click="suggestionClick(suggestion)">
+        <b v-if="suggestion.hasQuery">{{tmpQuery}}</b>{{suggestion.query}}
+      </li>
+    </ul>
+  </div>
   </div>
 </template>
 
@@ -64,7 +85,7 @@
 
       window.addEventListener('keydown', this.handleKeydown);
 
-      //this.$refs.googleSearchBar.focus();
+      this.$refs.googleSearchBar.focus();
     },
     beforeDestroy() {
       window.removeEventListener('keydown', this.handleKeydown);
