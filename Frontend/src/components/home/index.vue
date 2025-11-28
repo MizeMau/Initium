@@ -1,6 +1,11 @@
 ﻿<template>
   <div class="container">
     <div>test</div>
+    <div class="row">
+      <div class="col-md-12">
+        <input class="form-control" />
+      </div>
+    </div>
     <!-- Search Section -->
     <!--<section class="search-section">
       <div class="search-box">
