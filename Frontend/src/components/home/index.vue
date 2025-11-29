@@ -1,60 +1,42 @@
 ﻿<template>
   <div class="container">
     <div class="row mt-5">
-      <div class="col-md-12">
-        <div class="input-group mb-3">
-          <input ref="googleSearchBar"
-                 type="text" 
-                 class="form-control"
-                 placeholder="Search Google..."
-                 v-model="query"
-                 v-on:input="googleSearchInput">
-          <button class="btn btn-primary">🐱</button>
+      <div class="col-md-12 position-relative">
+        <div class="input-group">
+          <div class="form-floating">
+            <input ref="googleSearchBar"
+                   type="text"
+                   class="form-control"
+                   placeholder="Search Google..."
+                   v-model="query"
+                   v-on:input="googleSearchInput"
+                   v-on:focus="onFocusChange(true)" 
+                   v-on:blur="onFocusChange(false)"/>
+            <label for="floatingInput">Search Google...</label>
+          </div>
+          <button class="btn btn-primary"
+                  v-on:click="suggestionClick(query)">
+            🐱
+          </button>
         </div>
+        <ul ref="suggestionsDropdown"
+            class="dropdown-menu w-100">
+          <li v-for="(suggestion, index) in suggestions"
+              v-bind:key="`suggestion_${index}`"
+              v-on:click="suggestionClick(suggestion)"
+              class="dropdown-item"
+              v-bind:class="{ active: selectedSuggestion === index }">
+            {{suggestion}}
+          </li>
+        </ul>
       </div>
     </div>
-    <div class="row">
-      <div>
-
-      </div>
-    </div>
-    <!-- Search Section -->
-    <!--<section class="search-section">
-      <div class="search-box">
-        <input ref="googleSearchBar"
-               type="text"
-               placeholder="Search Google..."
-               v-model="query"
-               @input="googleSearchInput" />
-        <button class="search-btn"
-                @click="suggestionClick(query)">🐱</button>
-      </div>-->
-
-      <!-- Suggestions (Mockup) -->
-      <!--<ul v-if="suggestions.length > 0" class="suggestions">
-        <li v-for="(suggestion, index) in suggestions"
-            :key="`suggestion_${index}`"
-            @click="suggestionClick(suggestion)"
-            :class="{'suggestions-li-selected': selectedSuggestion == index}">
-          <b v-if="suggestion.hasQuery">{{tmpQuery}}</b>{{suggestion.query}}
-        </li>
-      </ul>
-    </section>-->
-    <!--<calender-component />-->
-  <div class="mt-5">
-    <ul v-if="suggestions.length > 0">
-      <li v-for="(suggestion, index) in suggestions"
-          :key="`suggestion_${index}`"
-          @click="suggestionClick(suggestion)">
-        <b v-if="suggestion.hasQuery">{{tmpQuery}}</b>{{suggestion.query}}
-      </li>
-    </ul>
-  </div>
+    <calender-component />
   </div>
 </template>
 
 <script>
-  //import CalenderComponent from './calendar.vue'
+  import CalenderComponent from './calendar.vue'
 
   import AutocompleteService from "@/service/google/autocomplete"
 
@@ -62,25 +44,26 @@
 
   export default {
     name: "HomePage",
-    //components: {
-    //  'calender-component': CalenderComponent
-    //},
+    components: {
+      'calender-component': CalenderComponent
+    },
     mounted() {
       this.runAutocomplete = useDebounceFn(async (uriQuery) => {
         if (!uriQuery) {
           this.suggestions = []
+          this.$refs.suggestionsDropdown.classList.remove('show')
           return
         }
         const data = await this.autocompleteService.getAutocompleteByQuery(uriQuery)
-        this.tmpQuery = this.query.trim()
         this.selectedSuggestion = null
-        this.suggestions = data.map(m => {
-          console.log('suggestion', m)
-          return {
-            hasQuery: m.includes(this.tmpQuery),
-            query: m.replace(this.tmpQuery, ''),
-          }
-        })
+        this.suggestions = data
+
+        if (this.suggestions.length > 0 && this.isInputFocused) {
+          this.$refs.suggestionsDropdown.classList.add('show')
+        } else {
+          this.$refs.suggestionsDropdown.classList.remove('show')
+        }
+
       }, 300)
 
       window.addEventListener('keydown', this.handleKeydown);
@@ -93,9 +76,9 @@
     data() {
       return {
         query: "",
-        tmpQuery: "",
         suggestions: [],
         selectedSuggestion: null,
+        isInputFocused: false,
         autocompleteService: new AutocompleteService(),
       }
     },
@@ -114,18 +97,27 @@
         if (key == 'ArrowUp') {
           if (this.selectedSuggestion <= 0) return
           this.selectedSuggestion--
-          const suggestion = this.suggestions[this.selectedSuggestion]
-          this.query = suggestion.hasQuery ? this.tmpQuery + suggestion.query : suggestion.query
+          this.query = this.suggestions[this.selectedSuggestion]
         }
         if (key == 'ArrowDown') {
           if (this.selectedSuggestion == null) this.selectedSuggestion = -1
           if (this.selectedSuggestion >= this.suggestions.length - 1) return
           this.selectedSuggestion++
-          const suggestion = this.suggestions[this.selectedSuggestion]
-          this.query = suggestion.hasQuery ? this.tmpQuery + suggestion.query : suggestion.query
+          this.query = this.suggestions[this.selectedSuggestion]
         }
         if (key == "Enter") {
           this.suggestionClick(this.query)
+        }
+      },
+      onFocusChange(isInputFocused) {
+        this.isInputFocused = isInputFocused
+        if (!isInputFocused) {
+          setTimeout(() => {
+            this.$refs.suggestionsDropdown.classList.remove("show")
+          }, 50)
+        }
+        else if (this.suggestions.length) {
+          this.$refs.suggestionsDropdown.classList.add("show")
         }
       }
     },
