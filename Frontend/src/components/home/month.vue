@@ -35,7 +35,8 @@
       </div>
       <button class="btn btn-secondary mt-4"
               v-on:click="emitExit">
-        Back
+        <i class="bi bi-chevron-double-left" />
+        Year overview
       </button>
     </div>
     <div class="col-md-6">

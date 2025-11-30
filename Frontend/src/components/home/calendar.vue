@@ -24,13 +24,15 @@
               <tbody>
                 <tr v-for="week in month.weekCount">
                   <template v-if="week == 1">
-                    <td v-for="offset in month.weekdayOffset"
-                        />
+                    <td v-for="offset in month.weekdayOffset" />
                   </template>
                   <td v-for="day in getWeekDaysByMonthAndWeek(month, week - 1)"
                       v-bind:class="day.isToday ? 'bg-primary' : ''">
                     {{day.number}}
                   </td>
+                  <template v-if="week == month.weekCount">
+                    <td v-for="offset in getExtraTd(month)" />
+                  </template>
                 </tr>
               </tbody>
             </table>
@@ -54,8 +56,8 @@
     },
     data() {
       return {
-        selectedYear: new Date().getFullYear(),
-        calendar: {},
+        today: new Date(),
+        calendar: [],
         selectedMonth: null,
       };
     },
@@ -68,25 +70,27 @@
           weekdayOffset: 0,
           days: [],
         }
-        const dateFirst = new Date(this.selectedYear, i, 1)
-        const dateLast = new Date(this.selectedYear, i + 1, 0)
-        const monthDays = dateLast.getDate();
-        let weekdayIndex = dateFirst.getDay();
+        const dateFirst = new Date(this.today.getFullYear(), i, 1)
+        const dateLast = new Date(this.today.getFullYear(), i + 1, 0)
+        const monthDays = dateLast.getDate()
+        let weekdayIndex = dateFirst.getDay()
         month.weekdayOffset = weekdayIndex != 0 ? weekdayIndex - 1 : 6
+
+        if (month.weekdayOffset > 0) month.weekCount++
 
         for (let y = 0; y < monthDays; y++) {
           month.days.push({
             number: y + 1
           })
-          if (y % 7 == 0) month.weekCount++
+          if ((y + month.weekdayOffset) % 7 == 0) month.weekCount++
         }
-        this.calendar[i] = month
+        this.calendar.push(month) 
       }
 
-      const today = new Date()
-      const monthIndex = today.getMonth()
-      const dayIndex = today.getDate() - 1
+      const monthIndex = this.today.getMonth()
+      const dayIndex = this.today.getDate() - 1
       this.calendar[monthIndex].days[dayIndex].isToday = true
+      this.selectedMonth = this.calendar[monthIndex]
     },
     methods: {
       getWeekDaysByMonthAndWeek(month, week) {
@@ -94,6 +98,10 @@
         const startIndex = week != 0 ? index : 0
         const endIndex = index + 7
         return month.days.slice(startIndex, endIndex)
+      },
+      getExtraTd(month) {
+        var tmp = 7 - (month.weekdayOffset + month.days.length) % 7
+        return tmp == 7 ? 0 : tmp
       }
     },
   }
