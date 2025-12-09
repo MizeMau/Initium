@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/authStore'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+    history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
             path: '/',
@@ -13,6 +13,13 @@ const router = createRouter({
             path: '/project-management',
             name: 'project-management',
             component: () => import('@/components/project-management/index.vue'),
+            children: [
+                {
+                    path: 'home',
+                    name: 'project-management-home',
+                    component: () => import('@/components/project-management/home/index.vue'),
+                },
+            ]
         },
         {
             path: '/login',
@@ -23,7 +30,6 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-    console.log('Navigating from', from.fullPath, 'to', to.fullPath)
     if (to.fullPath !== '/login') {
         const userStore = useUserStore()
         await userStore.getCurrentUser()

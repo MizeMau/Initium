@@ -13,9 +13,9 @@
       </li>
 
       <li class="nav-item">
-        <router-link to="/project-management" 
+        <router-link to="/project-management/home" 
                      class="nav-link d-flex align-items-center gap-2"
-                     v-bind:class="$route.path === '/project-management' ? '' : 'text-body'">
+                     v-bind:class="$route.path.startsWith('/project-management') ? '' : 'text-body'">
           <i class="bi bi-box fs-4"></i>
           <span v-if="isExpanded" class="text-nowrap">Projects</span>
         </router-link>

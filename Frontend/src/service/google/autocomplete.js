@@ -1,7 +1,6 @@
-﻿// Autocomplete.js
-import Service from '../service.js';
+﻿import Service from '../service.js';
 
-export default class Autocomplete extends Service {
+export default class GoogleAutocomplete extends Service {
     constructor() {
         super('/google/autocomplete'); // path for this API
     }

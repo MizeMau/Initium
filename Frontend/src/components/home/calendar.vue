@@ -102,7 +102,7 @@
       getExtraTd(month) {
         var tmp = 7 - (month.weekdayOffset + month.days.length) % 7
         return tmp == 7 ? 0 : tmp
-      }
+      },
     },
   }
 </script>

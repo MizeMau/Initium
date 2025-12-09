@@ -28,6 +28,9 @@
                     v-bind:class="day.isToday ? 'bg-primary' : ''">
                   {{day.number}}
                 </td>
+                <template v-if="week == month.weekCount">
+                  <td v-for="offset in getExtraTd(month)" />
+                </template>
               </tr>
             </tbody>
           </table>
@@ -71,6 +74,10 @@
         const startIndex = week != 0 ? index : 0
         const endIndex = index + 7
         return month.days.slice(startIndex, endIndex)
+      },
+      getExtraTd(month) {
+        var tmp = 7 - (month.weekdayOffset + month.days.length) % 7
+        return tmp == 7 ? 0 : tmp
       },
       emitExit() {
         this.$emit('exit')

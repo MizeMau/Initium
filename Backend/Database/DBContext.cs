@@ -6,7 +6,12 @@ namespace Backend.Database
     {
         public static string ConnectionString = "Server=MizeServerWindows;Database=Volgatus;User Id=Initium;Password=Initium;TrustServerCertificate=True;";
 
-        public DbSet<Table.Backend.User.Model> Users { get; set; }
+        #region Backend
+        public DbSet<Table.Backend.User.Model> BackendUser { get; set; }
+        #endregion
+        #region Management
+        public DbSet<Table.Management.Project.Model> ManagementProject { get; set; }
+        #endregion
         public DBContext() { }
         public DBContext(DbContextOptions<DBContext> options)
             : base(options) { }

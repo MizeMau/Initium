@@ -31,7 +31,6 @@ namespace Backend.Database.Table.Backend
 
         public class Service : Table.Service<Model>
         {
-            // Example: Add User-specific query
             public Model? GetByUsername(string username)
             {
                 return GetQuery().SingleOrDefault(s => s.Username == username);
