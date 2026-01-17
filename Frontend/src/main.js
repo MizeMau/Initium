@@ -4,6 +4,8 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
+import * as echarts from 'echarts'
+
 import { useUserStore } from '@/stores/authStore'
 
 import 'bootstrap-icons/font/bootstrap-icons.css'
@@ -18,6 +20,9 @@ const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
+
+app.config.globalProperties.$echarts = echarts
+app.provide('echarts', echarts)
 
 const userStore = useUserStore()
 await userStore.getCurrentUser()

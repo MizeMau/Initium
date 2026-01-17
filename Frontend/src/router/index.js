@@ -34,7 +34,7 @@ router.beforeEach(async (to, from, next) => {
         const userStore = useUserStore()
         await userStore.getCurrentUser()
     }
-    next() // must call next() to continue navigation
+    next()
 })
 
 export default router
