@@ -35,7 +35,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
   import CalenderComponent from './calendar.vue'
 
   import AutocompleteService from "@/service/google/autocomplete"

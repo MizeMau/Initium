@@ -21,10 +21,9 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
-app.config.globalProperties.$echarts = echarts
 app.provide('echarts', echarts)
 
-const userStore = useUserStore()
+const userStore = useUserStore(pinia)
 await userStore.getCurrentUser()
 
 app.mount('#app')

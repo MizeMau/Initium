@@ -1,62 +1,60 @@
-﻿// /src/stores/user.js
-import { ref } from 'vue'
+﻿import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import router from '@/router'
-import userService from '@/service/auth/user'
+import UserService from '@/service/auth/user'
+import type { User } from '@/service/auth/user'
 
 export const useUserStore = defineStore('user', () => {
-    const user = ref(null)
+    const user = ref<User | null>(null)
     const loading = ref(false)
-    const error = ref(null)
+    const error = ref<Error | null>(null)
 
-    async function login(username, password) {
+    async function login(username: string, password: string): Promise<void> {
         loading.value = true
         error.value = null
         try {
-            const api = new userService()
+            const api = new UserService()
             const hashedPassword = await hashPassword(password)
             const result = await api.login(username, hashedPassword)
-            user.value = result.data || result
+            user.value = result
         } catch (err) {
             console.error('Login failed:', err)
-            error.value = err
+            error.value = err as Error
             throw err
         } finally {
             loading.value = false
         }
     }
 
-    async function hashPassword(password) {
+    async function hashPassword(password: string): Promise<string> {
         const encoder = new TextEncoder()
         const data = encoder.encode(password)
         const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-        const hashArray = Array.from(new Uint8Array(hashBuffer))
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-        return hashHex
+        return Array.from(new Uint8Array(hashBuffer))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('')
     }
 
-    async function logout() {
-        console.log('logout')
+    async function logout(): Promise<void> {
         loading.value = true
         error.value = null
         try {
-            const api = new userService()
-            const result = await api.logout()
+            const api = new UserService()
+            await api.logout()
             user.value = null
         } catch (err) {
-            console.error('logout failed:', err)
-            error.value = err
+            console.error('Logout failed:', err)
+            error.value = err as Error
         } finally {
             loading.value = false
         }
     }
 
-    async function getCurrentUser() {
-        // optional: if you want to auto-fetch current user on load
+    async function getCurrentUser(): Promise<void> {
         try {
-            const api = new userService()
+            const api = new UserService()
             const result = await api.getCurrentUser?.()
-            user.value = result?.data || result
+            user.value = result
         } catch (err) {
             console.warn('Failed to fetch user:', err)
             router.push('/login')

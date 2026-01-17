@@ -11,7 +11,7 @@ namespace Backend.Database.Table.Management
         {
             [Key]
             public long ManagementProjectID { get; set; }
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
             public long BackendUserID_CreatedBy { get; set; }
         }
 

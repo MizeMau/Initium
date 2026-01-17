@@ -16,16 +16,16 @@ namespace Backend.Database.Table.Backend
             public string Salt { get; set; } = string.Empty;
         }
 
-        public class DTO
+        public class DTO : BaseModel
         {
             public DTO(Model model)
             {
                 BackendUserID = model.BackendUserID;
                 Created = model.Created;
+                Deleted = model.Deleted;
                 Username = model.Username;
             }
             public long BackendUserID { get; set; }
-            public DateTime Created { get; set; }
             public string Username { get; set; } = string.Empty;
         }
 

@@ -19,6 +19,11 @@ const router = createRouter({
                     name: 'project-management-home',
                     component: () => import('@/components/project-management/home/index.vue'),
                 },
+                {
+                    path: 'project/:id',
+                    name: 'project-management-project',
+                    component: () => import('@/components/project-management/project/index.vue'),
+                },
             ]
         },
         {
@@ -32,7 +37,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
     if (to.fullPath !== '/login') {
         const userStore = useUserStore()
-        await userStore.getCurrentUser()
+        userStore.getCurrentUser()
     }
     next()
 })
