@@ -1,6 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Azure.Core;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Backend.Database.Table
 {
@@ -21,13 +24,48 @@ namespace Backend.Database.Table
                 return _context.Set<T>().AsQueryable();
             return _context.Set<T>().Where(w => w.Deleted == null).AsQueryable();
         }
+        public virtual IQueryable<T> GetQuery(HttpRequest? request, bool withDeleted = false)
+        {
+            var query = GetQuery(withDeleted);
+
+            if (request == null)
+                return query;
+
+            foreach (var (key, value) in request.Query)
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    continue;
+
+                string modelKey = $"{key[0].ToString().ToUpper()}{key.Substring(1)}";
+                var property = typeof(T).GetProperty(modelKey);
+                if (property == null)
+                    continue;
+
+                var parameter = Expression.Parameter(typeof(T), "x");
+                var propertyAccess = Expression.Property(parameter, property);
+
+                var convertedValue = Convert.ChangeType(value.ToString(), property.PropertyType);
+
+                var constant = Expression.Constant(convertedValue);
+                var equality = Expression.Equal(propertyAccess, constant);
+                var lambda = Expression.Lambda<Func<T, bool>>(equality, parameter);
+
+                query = query.Where(lambda);
+            }
+
+            return query;
+        }
 
         public virtual List<T> GetAll(bool withDeleted = false)
         {
-            using var context = CreateContext();
-            if (withDeleted)
-                return _context.Set<T>().ToList();
-            return context.Set<T>().Where(w => w.Deleted == null).ToList();
+            return GetQuery(withDeleted)
+                .ToList();
+        }
+
+        public virtual List<T> GetAll(HttpRequest request, bool withDeleted = false)
+        {
+            return GetQuery(request, withDeleted)
+                .ToList();
         }
 
         public virtual T? GetById(long id)

@@ -37,7 +37,7 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
     if (to.fullPath !== '/login') {
         const userStore = useUserStore()
-        userStore.getCurrentUser()
+        await userStore.getCurrentUser()
     }
     next()
 })

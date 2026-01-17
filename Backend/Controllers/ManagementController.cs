@@ -20,7 +20,7 @@ namespace Backend.Controllers
                 return Unauthorized();
 
             var userID = long.Parse(userIDString);
-            var projects = dbTableManagementProjectService.GetAllWithAccess(userID);
+            var projects = dbTableManagementProjectService.GetAllWithAccess(userID, Request);
 
             return Ok(projects);
         }

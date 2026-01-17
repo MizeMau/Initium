@@ -10,6 +10,6 @@ export interface ManagementProject {
 
 export default class ManagementProjectService extends Service<ManagementProject> {
     constructor() {
-        super('/management/project');
+        super('/management/project', 'managementProjectID')
     }
 }

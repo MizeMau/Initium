@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Database.Table.Management
@@ -22,9 +21,9 @@ namespace Backend.Database.Table.Management
 
         public class Service : Table.Service<Model>
         {
-            public List<Model> GetAllWithAccess(long backendUserID)
+            public List<Model> GetAllWithAccess(long backendUserID, HttpRequest? request = null)
             {
-                return GetQuery()
+                return GetQuery(request)
                     .Where(project => project.BackendUserID_CreatedBy == backendUserID)
                     .ToList();
             }

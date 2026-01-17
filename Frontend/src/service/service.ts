@@ -3,7 +3,9 @@ import router from '@/router'
 
 export default class Service<TDefault> {
     protected api: AxiosInstance
-    constructor(path: string) {
+    protected key: string
+    constructor(path: string, key: string) {
+        this.key = key
         this.api = axios.create({
             baseURL: `http://localhost:5045${path}`,
             headers: {
@@ -26,24 +28,32 @@ export default class Service<TDefault> {
         endpoint = '',
         params?: Record<string, unknown>
     ): Promise<T> {
+        const response = await this.getAll<T>(endpoint, params)
+        if (!Array.isArray(response))
+            return response
+        if (response.length === 0)
+            return null as T
+        return response[0]
+    }
+
+    async getAll<T = TDefault[]>(
+        endpoint = '',
+        params?: Record<string, unknown>
+    ): Promise<T> {
         const response = await this.api.get<T>(endpoint, { params })
         return response.data
     }
 
-    async getAll<T = TDefault>(
-        endpoint = '',
-        params?: Record<string, unknown>
-    ): Promise<T[]> {
-        const response = await this.api.get<T[]>(endpoint, { params })
-        return response.data
-    }
-
     async getById<T = TDefault>(
-        endpoint = '',
         id: string | number
     ): Promise<T> {
-        const response = await this.api.get<T>(`${endpoint}/${id}`)
-        return response.data
+        if (this.key == null) {
+            console.error('No key defined')
+        }
+        const response = await this.get<T>('', {
+            [this.key]: id
+        })
+        return response
     }
 
     async create<T = TDefault>(
