@@ -24,5 +24,12 @@ namespace Backend.Controllers
 
             return Ok(projects);
         }
+        [HttpGet("section")]
+        public IActionResult Section_GET()
+        {
+            var dbTablelManagementSectionService = new Database.Table.Management.Section.Service();
+            var sections = dbTablelManagementSectionService.GetAll(Request);
+            return Ok(sections);
+        }
     }
 }
