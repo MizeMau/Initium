@@ -11,22 +11,27 @@ namespace Backend.Database.Table.Backend
         {
             [Key]
             public long BackendUserID { get; set; }
+            /// <summary>
+            /// varchar(64)
+            /// </summary>
             public string Username { get; set; } = string.Empty;
+            /// <summary>
+            /// varchar(MAX)
+            /// </summary>
             public string Password { get; set; } = string.Empty;
+            /// <summary>
+            /// varchar(32)
+            /// </summary>
             public string Salt { get; set; } = string.Empty;
         }
 
-        public class DTO : BaseModel
+        public class DTO
         {
-            public DTO(Model model)
+            public class User : BaseModel
             {
-                BackendUserID = model.BackendUserID;
-                Created = model.Created;
-                Deleted = model.Deleted;
-                Username = model.Username;
+                public long BackendUserID { get; set; }
+                public string Username { get; set; } = string.Empty;
             }
-            public long BackendUserID { get; set; }
-            public string Username { get; set; } = string.Empty;
         }
 
         public class Service : Table.Service<Model>

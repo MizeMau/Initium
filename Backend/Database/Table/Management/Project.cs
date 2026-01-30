@@ -10,13 +10,19 @@ namespace Backend.Database.Table.Management
         {
             [Key]
             public long ManagementProjectID { get; set; }
+            /// <summary>
+            /// nvarchar(64)
+            /// </summary>
             public string Name { get; set; } = string.Empty;
             public long BackendUserID_CreatedBy { get; set; }
         }
 
         public class DTO
         {
-
+            public class Project : Model
+            {
+                public List<Section.DTO.Section> Sections { get; set; } = new();
+            }
         }
 
         public class Service : Table.Service<Model>

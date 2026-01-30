@@ -13,10 +13,13 @@ namespace Backend.Database
         #region Backend
         public DbSet<Table.Backend.User.Model> BackendUser { get; set; }
         #endregion
+
         #region Management
         public DbSet<Table.Management.Project.Model> ManagementProject { get; set; }
         public DbSet<Table.Management.Section.Model> ManagementSection { get; set; }
+        public DbSet<Table.Management.Task.Model> ManagementTask { get; set; }
         #endregion
+
         public DBContext() { }
         public DBContext(DbContextOptions<DBContext> options)
             : base(options) { }

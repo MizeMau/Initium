@@ -25,25 +25,19 @@
   import { ref, onMounted } from 'vue'
   import { useRoute } from 'vue-router'
   import ManagementProjectService from '@/service/management/project'
-  import type { ManagementProject } from '@/service/management/project'
-  import ManagementSectionService from '@/service/management/section'
-  import type { ManagementSection } from '@/service/management/section'
+  import type { ManagementProjectFull } from '@/service/management/project'
 
   import BoardTabComponent from './board-tab.vue'
 
   const route = useRoute()
 
   const managementProjectService = new ManagementProjectService()
-  const managementSectionService = new ManagementSectionService()
 
-  const project = ref<ManagementProject>({})
-  const sections = ref<ManagementSection[]>([])
+  const project = ref<ManagementProjectFull>({})
 
   onMounted(async () => {
     const managementProjectID: number = +route.params.id
     if (managementProjectID == null) return
-    project.value = await managementProjectService.getById(managementProjectID)
-    if (project.value == null) return
-    sections.value = await managementSectionService.getAllByProject(managementProjectID)
+    project.value = await managementProjectService.getFullByProject(managementProjectID)
   })
 </script>

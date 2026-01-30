@@ -50,11 +50,11 @@
     --bs-form-invalid-color: #ea868f;
     --bs-form-invalid-border-color: #ea868f;
     /**/
-    --bs-link-color: #800080;
+    --bs-link-color: #C000C0;
     --bs-link-hover-color: #8f0f8f;
     --bs-link-color-rgb: 128, 0, 128;
     /**/
-    --mm-focus-border: #800080;
+    --mm-focus-border: #C000C0;
     --mm-focus-border-rgb: 128, 0, 128;
 }
 [data-bs-theme=amethyst-dark] .form-select {
@@ -96,8 +96,8 @@
 
     [data-bs-theme=amethyst-dark] .btn-primary {
         --bs-btn-color: #fff;
-        --bs-btn-bg: #800080;
-        --bs-btn-border-color: #800080;
+        --bs-btn-bg: #C000C0;
+        --bs-btn-border-color: #C000C0;
         --bs-btn-hover-color: #fff;
         --bs-btn-hover-bg: #8f0f8f;
         --bs-btn-hover-border-color: #8f0f8f;
@@ -107,23 +107,23 @@
         --bs-btn-active-border-color: #9f1f9f;
         --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
         --bs-btn-disabled-color: #fff;
-        --bs-btn-disabled-bg: #800080;
-        --bs-btn-disabled-border-color: #800080;
+        --bs-btn-disabled-bg: #C000C0;
+        --bs-btn-disabled-border-color: #C000C0;
     }
 
     [data-bs-theme=amethyst-dark] .btn-outline-primary {
-        --bs-btn-color: #800080;
-        --bs-btn-border-color: #800080;
+        --bs-btn-color: #C000C0;
+        --bs-btn-border-color: #C000C0;
         --bs-btn-hover-color: #fff;
-        --bs-btn-hover-bg: #800080;
-        --bs-btn-hover-border-color: #800080;
+        --bs-btn-hover-bg: #C000C0;
+        --bs-btn-hover-border-color: #C000C0;
         --bs-btn-focus-shadow-rgb: 13, 110, 253;
         --bs-btn-active-color: #fff;
-        --bs-btn-active-bg: #800080;
-        --bs-btn-active-border-color: #800080;
+        --bs-btn-active-bg: #C000C0;
+        --bs-btn-active-border-color: #C000C0;
         --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-        --bs-btn-disabled-color: #800080;
+        --bs-btn-disabled-color: #C000C0;
         --bs-btn-disabled-bg: transparent;
-        --bs-btn-disabled-border-color: #800080;
+        --bs-btn-disabled-border-color: #C000C0;
         --bs-gradient: none;
     }

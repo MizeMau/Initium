@@ -67,7 +67,7 @@ namespace Backend.Controllers
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties);
 
-            var userDTO = new Database.Table.Backend.User.DTO(user);
+            var userDTO = Util.Converter.Convert<Database.Table.Backend.User.DTO>(user);
             return Ok(userDTO);
         }
 
@@ -94,7 +94,7 @@ namespace Backend.Controllers
             if (user.Deleted != null)
                 return Unauthorized();
 
-            var userDTO = new Database.Table.Backend.User.DTO(user);
+            var userDTO = Util.Converter.Convert<Database.Table.Backend.User.DTO>(user);
             return Ok(userDTO);
         }
     }

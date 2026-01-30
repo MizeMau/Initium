@@ -3,26 +3,33 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Database.Table.Management
 {
-    public class Section
+    public class Task
     {
-        [Table("Section", Schema = "management")]
+        [Table("Task", Schema = "management")]
         public class Model : BaseModel
         {
             [Key]
-            public long ManagementSectionID { get; set; }
+            public long ManagementTaskID { get; set; }
             /// <summary>
-            /// nvarchar(64)
+            /// nvarchar(128)
             /// </summary>
             public string Name { get; set; } = string.Empty;
+            /// <summary>
+            /// nvarchar(MAX),
+            /// saves HTML content from text field
+            /// </summary>
+            public string Description { get; set; } = string.Empty;
+            public bool IsCompleted { get; set; }
+            public bool IsMilestone { get; set; }
+            public DateTime? Start { get; set; }
+            public DateTime? End { get; set; }
             public long ManagementProjectID { get; set; }
+            public long ManagementSectionID { get; set; }
         }
 
         public class DTO
         {
-            public class Section : Model
-            {
-                public List<Task.Model> Tasks { get; set; } = new();
-            }
+
         }
 
         public class Service : Table.Service<Model>
