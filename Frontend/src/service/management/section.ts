@@ -4,12 +4,12 @@ import type { ManagementTask } from '@/service/management/task'
 export interface ManagementSection {
     managementSectionID: number
     created: Date
-    deleted: Date
+    deleted: Date | null
     name: string
     managementProjectID: number
 }
 export interface ManagementSectionFull extends ManagementSection {
-    sections: Array<ManagementTask>
+    tasks: Array<ManagementTask>
 }
 export default class ManagementSectionService extends Service<ManagementSection> {
     constructor() {

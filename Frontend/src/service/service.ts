@@ -57,26 +57,62 @@ export default class Service<TDefault> {
     }
 
     async create<T = TDefault>(
-        endpoint = '',
         body: T
+    ): Promise<T>
+    async create<T = TDefault>(
+        endpoint: string,
+        body: T
+    ): Promise<T>
+    async create<T = TDefault>(
+        endpointOrBody: string | T,
+        maybeBody?: T
     ): Promise<T> {
+        const endpoint =
+            typeof endpointOrBody === 'string'
+                ? endpointOrBody
+                : ''
+
+        const body =
+            typeof endpointOrBody === 'string'
+                ? maybeBody!
+                : endpointOrBody
+
         const response = await this.api.post<T>(endpoint, body)
         return response.data
     }
 
+
     async update<T = TDefault>(
-        endpoint = '',
         body: T
+    ): Promise<T>
+    async update<T = TDefault>(
+        endpoint: string,
+        body: T
+    ): Promise<T>
+    async update<T = TDefault>(
+        endpointOrBody: string | T,
+        maybeBody?: T
     ): Promise<T> {
-        const response = await this.api.put<T>(`${endpoint}`, body)
+        const endpoint =
+            typeof endpointOrBody === 'string'
+                ? endpointOrBody
+                : ''
+
+        const body =
+            typeof endpointOrBody === 'string'
+                ? maybeBody!
+                : endpointOrBody
+
+        const response = await this.api.put<T>(endpoint, body)
         return response.data
     }
 
-    async delete<T = TDefault>(
+
+    async delete(
         endpoint = '',
         id: string | number
-    ): Promise<T> {
-        const response = await this.api.delete<T>(`${endpoint}/${id}`)
+    ): Promise<boolean> {
+        const response = await this.api.delete<boolean>(`${endpoint}?id=${id}`)
         return response.data
     }
 }

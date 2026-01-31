@@ -60,5 +60,26 @@ namespace Backend.Controllers
             var sections = dbTablelManagementSectionService.GetAll(Request);
             return Ok(sections);
         }
+        [HttpPost("section")]
+        public IActionResult Section_POST(Database.Table.Management.Section.Model model)
+        {
+            var dbTablelManagementSectionService = new Database.Table.Management.Section.Service();
+            var section = dbTablelManagementSectionService.Create(model);
+            return Ok(section);
+        }
+        [HttpPut("section")]
+        public IActionResult Section_PUT(Database.Table.Management.Section.Model model)
+        {
+            var dbTablelManagementSectionService = new Database.Table.Management.Section.Service();
+            var section = dbTablelManagementSectionService.Update(model);
+            return Ok(section);
+        }
+        [HttpDelete("section")]
+        public IActionResult Section_DELETE([FromQuery] long id)
+        {
+            var dbTablelManagementSectionService = new Database.Table.Management.Section.Service();
+            var section = dbTablelManagementSectionService.Delete(id);
+            return Ok(section);
+        }
     }
 }

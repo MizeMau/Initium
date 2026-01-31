@@ -91,7 +91,7 @@ namespace Backend.Database.Table
             return entity;
         }
 
-        public virtual bool Delete(long id, bool hard)
+        public virtual bool Delete(long id, bool hard = false)
         {
             using var context = CreateContext();
             var entity = context.Set<T>().Find(id);

@@ -1,7 +1,7 @@
 <template>
   <div class="container container-lg mt-3">
     <h1>
-      Project {{ project.name }}
+      Project {{ project?.name }}
     </h1>
     <hr />
     <nav>
@@ -10,12 +10,13 @@
         <button class="nav-link active" id="nav-board-tab" data-bs-toggle="tab" data-bs-target="#nav-board" type="button" role="tab" aria-controls="nav-board" aria-selected="true">Board</button>
       </div>
     </nav>
-    <div class="tab-content" id="nav-tabContent">
+    <div v-if="project"
+         class="tab-content" id="nav-tabContent">
       <div class="tab-pane fade" id="nav-list" role="tabpanel" aria-labelledby="nav-list-tab">
 
       </div>
       <div class="tab-pane fade show active" id="nav-board" role="tabpanel" aria-labelledby="nav-board-tab">
-        <BoardTabComponent v-bind:sections="project.sections" />
+        <BoardTabComponent v-bind:project="project" />
       </div>
     </div>
   </div>
@@ -33,7 +34,7 @@
 
   const managementProjectService = new ManagementProjectService()
 
-  const project = ref<ManagementProjectFull>({})
+  const project = ref<ManagementProjectFull>()
 
   onMounted(async () => {
     const managementProjectID: number = +route.params.id
