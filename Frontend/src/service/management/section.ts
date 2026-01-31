@@ -1,5 +1,5 @@
 import Service from '../service';
-import type { ManagementTask } from '@/service/management/task'
+import type { ManagementTaskFull } from '@/service/management/task'
 
 export interface ManagementSection {
     managementSectionID: number
@@ -9,7 +9,7 @@ export interface ManagementSection {
     managementProjectID: number
 }
 export interface ManagementSectionFull extends ManagementSection {
-    tasks: Array<ManagementTask>
+    tasks: Array<ManagementTaskFull>
 }
 export default class ManagementSectionService extends Service<ManagementSection> {
     constructor() {

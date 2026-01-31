@@ -4,7 +4,7 @@ import type { ManagementSectionFull } from '@/service/management/section'
 export interface ManagementProject {
     managementProjectID: number
     created: Date
-    deleted: Date
+    deleted: Date | null
     name: string
     backendUserID_CreatedBy: number
 }

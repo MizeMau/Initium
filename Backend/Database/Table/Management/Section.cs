@@ -21,7 +21,7 @@ namespace Backend.Database.Table.Management
         {
             public class Section : Model
             {
-                public List<Task.Model> Tasks { get; set; } = new();
+                public List<Task.DTO.Task> Tasks { get; set; } = new();
             }
         }
 

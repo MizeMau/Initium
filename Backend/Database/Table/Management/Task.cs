@@ -25,11 +25,15 @@ namespace Backend.Database.Table.Management
             public DateTime? End { get; set; }
             public long ManagementProjectID { get; set; }
             public long ManagementSectionID { get; set; }
+            public long? ManagementTaskID_Head { get; set; }
         }
 
         public class DTO
         {
-
+            public class Task : Model
+            {
+                public List<Model> Tasks { get; set; } = new();
+            }
         }
 
         public class Service : Table.Service<Model>

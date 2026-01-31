@@ -45,10 +45,23 @@ namespace Backend.Controllers
             if (project.Sections.Count == 0) 
                 return Ok(project);
 
-            var dbTasks = dbTableManagementTaskService.GetAllByProject(dbproject);
+            var tmpDBTasks = dbTableManagementTaskService.GetAllByProject(dbproject);
+            var dbTasks = Util.Converter.Convert<Database.Table.Management.Task.DTO.Task>(tmpDBTasks);
+
+            var tmpTasks = tmpDBTasks.Where(w => w.ManagementTaskID_Head != null);
+            foreach(var tmpTask in tmpTasks)
+            {
+                var tmpTask_Head = dbTasks.First(f => f.ManagementTaskID == tmpTask.ManagementTaskID_Head);
+                tmpTask_Head.Tasks.Add(tmpTask);
+                int index = dbTasks.FindIndex(f => f.ManagementTaskID == tmpTask.ManagementTaskID);
+                dbTasks.RemoveAt(index);
+            }
+
+            var sectionsTasks = dbTasks.Where(w => w.ManagementTaskID_Head == null);
             foreach (var section in project.Sections)
             {
-                section.Tasks = dbTasks.Where(t => t.ManagementSectionID == section.ManagementSectionID).ToList();
+                var sectionTasks = sectionsTasks.Where(t => t.ManagementSectionID == section.ManagementSectionID).ToList();
+                section.Tasks = sectionTasks;
             }
 
             return Ok(project);
@@ -80,6 +93,34 @@ namespace Backend.Controllers
             var dbTablelManagementSectionService = new Database.Table.Management.Section.Service();
             var section = dbTablelManagementSectionService.Delete(id);
             return Ok(section);
+        }
+        [HttpGet("task")]
+        public IActionResult Task_GET()
+        {
+            var dbTablelManagementTaskService = new Database.Table.Management.Task.Service();
+            var tasks = dbTablelManagementTaskService.GetAll(Request);
+            return Ok(tasks);
+        }
+        [HttpPost("task")]
+        public IActionResult Task_POST(Database.Table.Management.Task.Model model)
+        {
+            var dbTablelManagementTaskService = new Database.Table.Management.Task.Service();
+            var tasks = dbTablelManagementTaskService.Create(model);
+            return Ok(tasks);
+        }
+        [HttpPut("task")]
+        public IActionResult Task_PUT(Database.Table.Management.Task.Model model)
+        {
+            var dbTablelManagementTaskService = new Database.Table.Management.Task.Service();
+            var tasks = dbTablelManagementTaskService.Update(model);
+            return Ok(tasks);
+        }
+        [HttpDelete("task")]
+        public IActionResult Task_DELETE([FromQuery] long id)
+        {
+            var dbTablelManagementTaskService = new Database.Table.Management.Task.Service();
+            var tasks = dbTablelManagementTaskService.Delete(id);
+            return Ok(tasks);
         }
     }
 }

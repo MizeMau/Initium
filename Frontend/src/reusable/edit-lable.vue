@@ -1,39 +1,47 @@
 <style scoped>
-  .pointer {
-    cursor: pointer;
+  textarea {
+    resize: none;
+    overflow: hidden;
   }
 </style>
 
 <template>
   <div class="inline-editor"
        @dblclick="enableEdit">
-    <input ref="inputEl"
-           v-model="model"
-           v-bind:maxlength="maxlength"
-           v-bind:readonly="!edit"
-           class="form-control"
-           v-bind:class="{'border-0 bg-transparent pointer': !edit}"
-           placeholder="New Section"
-           @mousedown="blockFocus"
-           @blur="disableEdit()" 
-           @keydown.enter="disableEdit()"
-           @keydown.esc="disableEdit(true)" />
+    <textarea ref="inputEl"
+              rows="1"
+              v-model="model"
+              v-bind:maxlength="maxlength"
+              v-bind:readonly="!edit"
+              class="form-control"
+              v-bind:class="{'border-0 bg-transparent cursor-pointer': !edit}"
+              v-bind:placeholder="placeholder"
+              @mousedown="blockFocus"
+              @blur="disableEdit()" 
+              @keydown.enter="disableEdit()"
+              @keydown.esc="disableEdit(true)"
+              @input="autoResize" />
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, nextTick } from 'vue'
+  import { ref, nextTick, onMounted } from 'vue'
   const emit = defineEmits(['update'])
 
   const model = defineModel<string>()
 
   defineProps<{
     maxlength?: number | string
+    placeholder?: string
   }>()
 
   const oldModel = ref<string | undefined>('')
   const edit = ref<boolean>(false)
   const inputEl = ref<HTMLInputElement | null>(null)
+
+  onMounted(async () => {
+    autoResize()
+  })
 
   function blockFocus(e: MouseEvent) {
     if (!edit.value) {
@@ -47,6 +55,7 @@
     nextTick(() => {
       inputEl.value?.focus()
       //inputEl.value?.select()
+      autoResize()
     })
   }
 
@@ -68,6 +77,13 @@
       return
 
     emit('update')
+  }
 
+  function autoResize() {
+    const el = inputEl.value
+    if (!el) return
+
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
   }
 </script>
