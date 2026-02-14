@@ -61,7 +61,7 @@ namespace Backend.Controllers
             foreach (var section in project.Sections)
             {
                 var sectionTasks = sectionsTasks.Where(t => t.ManagementSectionID == section.ManagementSectionID).ToList();
-                section.Tasks = sectionTasks;
+                section.Tasks = sectionTasks.OrderBy(o => o.SortNumber).ToList();
             }
 
             return Ok(project);
@@ -105,22 +105,36 @@ namespace Backend.Controllers
         public IActionResult Task_POST(Database.Table.Management.Task.Model model)
         {
             var dbTablelManagementTaskService = new Database.Table.Management.Task.Service();
-            var tasks = dbTablelManagementTaskService.Create(model);
-            return Ok(tasks);
+            var task = dbTablelManagementTaskService.Create(model);
+            return Ok(task);
         }
         [HttpPut("task")]
         public IActionResult Task_PUT(Database.Table.Management.Task.Model model)
         {
             var dbTablelManagementTaskService = new Database.Table.Management.Task.Service();
-            var tasks = dbTablelManagementTaskService.Update(model);
-            return Ok(tasks);
+            var task = dbTablelManagementTaskService.Update(model);
+            return Ok(task);
         }
         [HttpDelete("task")]
         public IActionResult Task_DELETE([FromQuery] long id)
         {
             var dbTablelManagementTaskService = new Database.Table.Management.Task.Service();
-            var tasks = dbTablelManagementTaskService.Delete(id);
-            return Ok(tasks);
+            var success = dbTablelManagementTaskService.Delete(id);
+            return Ok(success);
+        }
+        [HttpPut("task/section")]
+        public IActionResult Task_Section_PUT([FromBody] Database.Table.Management.Task.DTO.UpdateTaskSection updateTaskSection)
+        {
+            var dbTablelManagementTaskService = new Database.Table.Management.Task.Service();
+            var success = dbTablelManagementTaskService.UpdateProperty(updateTaskSection.ManagementTaskID, u => u.ManagementSectionID, updateTaskSection.ManagementSectionID);
+            return Ok(success);
+        }
+        [HttpPut("task/sortNumber")]
+        public IActionResult Task_Sortnumber_PUT([FromQuery] int index, Database.Table.Management.Task.Model model)
+        {
+            var dbTablelManagementTaskService = new Database.Table.Management.Task.Service();
+            bool success = dbTablelManagementTaskService.UpdateSortNumber(model, index);
+            return Ok(success);
         }
     }
 }

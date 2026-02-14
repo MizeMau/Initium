@@ -20,4 +20,16 @@ export default class ManagementTaskService extends Service<ManagementTask> {
     constructor() {
         super('/management/task', 'managementTaskID')
     }
+
+    updateSectionID(managementTaskID: number, managementSectionID: number) {
+        this.update('section',
+        {
+            managementTaskID,
+            managementSectionID
+        })
+    }
+
+    updateSortNumber(task: ManagementTask, index: number) {
+        this.update(`sortNumber?index=${index}`, task)
+    }
 }

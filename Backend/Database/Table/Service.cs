@@ -91,32 +91,51 @@ namespace Backend.Database.Table
             return entity;
         }
 
+        public virtual bool UpdateProperty<TProperty>(object key, Expression<Func<T, TProperty>> propertyExpression, TProperty value)
+        {
+            using var context = CreateContext();
+
+            var entityType = context.Model.FindEntityType(typeof(T));
+            var primaryKey = entityType!.FindPrimaryKey()!;
+            var keyProperty = primaryKey.Properties.First();
+
+            var parameter = Expression.Parameter(typeof(T), "e");
+
+            var propertyAccess = Expression.Call(
+                typeof(EF),
+                nameof(EF.Property),
+                new[] { keyProperty.ClrType },
+                parameter,
+                Expression.Constant(keyProperty.Name)
+            );
+
+            var equals = Expression.Equal(
+                propertyAccess,
+                Expression.Constant(key)
+            );
+
+            var lambda = Expression.Lambda<Func<T, bool>>(equals, parameter);
+
+            var affected = context.Set<T>()
+                .Where(lambda)
+                .ExecuteUpdate(setters =>
+                    setters.SetProperty(propertyExpression, value));
+
+            return affected == 1;
+        }
+
         public virtual bool Delete(long id, bool hard = false)
         {
             using var context = CreateContext();
+            if (!hard)
+            {
+                return UpdateProperty(id, u => u.Deleted, DateTime.Now);
+            }
             var entity = context.Set<T>().Find(id);
             if (entity == null) return false;
-            if (hard)
-            {
-                context.Set<T>().Remove(entity);
-            }
-            else
-            {
-                entity.Deleted = DateTime.Now;
-                context.Set<T>().Update(entity);
-            }
+            context.Set<T>().Remove(entity);
             context.SaveChanges();
             return true;
         }
-    }
-    public class BaseModel : IDeleteable
-    {
-        public DateTime Created { get; set; }
-        public DateTime? Deleted { get; set; }
-    }
-    public interface IDeleteable
-    {
-        public DateTime Created { get; set; }
-        public DateTime? Deleted { get; set; }
     }
 }
