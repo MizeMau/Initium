@@ -21,4 +21,8 @@ export default class ManagementSectionService extends Service<ManagementSection>
             managementProjectID: managementProjectID,
         });
     }
+
+    updateSortNumber(section: ManagementSection, index: number) {
+        this.update(`sortNumber?index=${index}`, section)
+    }
 }

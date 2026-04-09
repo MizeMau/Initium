@@ -214,15 +214,14 @@
     value = task!
   }
 
-  async function onSectionReorder() {
-    // project.sections is already reordered
-    // Persist order if your backend supports ordering
-    console.log('Sections reordered', props.project.sections)
+  async function onSectionReorder(event: any) {
+    const movedSection: ManagementSectionFull = event.item.__draggable_context.element
+    var index = props.project.sections.findIndex(f => f.managementSectionID == movedSection.managementSectionID)
+    movedSection.tasks = []
+    await managementSectionService.updateSortNumber(movedSection, index)
   }
 
   async function onTaskDrop(event: any) {
-    console.log('section', event.from)
-
     const movedTask: ManagementTaskFull = event.item.__draggable_context.element
 
     const oldSectionID = movedTask.managementSectionID
@@ -238,6 +237,7 @@
     }
 
     var index = newSection.tasks.findIndex(f => f.managementTaskID == movedTask.managementTaskID)
+    movedTask.tasks = []
     await managementTaskService.updateSortNumber(movedTask, index)
   }
 </script>

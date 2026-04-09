@@ -94,6 +94,13 @@ namespace Backend.Controllers
             var section = dbTablelManagementSectionService.Delete(id);
             return Ok(section);
         }
+        [HttpPut("section/sortNumber")]
+        public IActionResult Section_Sortnumber_PUT([FromQuery] int index, Database.Table.Management.Section.Model model)
+        {
+            var dbTablelManagementTaskService = new Database.Table.Management.Section.Service();
+            bool success = dbTablelManagementTaskService.UpdateSortNumber(model, index);
+            return Ok(success);
+        }
         [HttpGet("task")]
         public IActionResult Task_GET()
         {

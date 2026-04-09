@@ -1,9 +1,7 @@
-﻿using Azure.Core;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Backend.Database.Table
 {
@@ -77,7 +75,7 @@ namespace Backend.Database.Table
         public virtual T Create(T entity)
         {
             using var context = CreateContext();
-            entity.Created = DateTime.Now;
+            entity.Created = DateTime.UtcNow;
             context.Set<T>().Add(entity);
             context.SaveChanges();
             return entity;
@@ -129,7 +127,7 @@ namespace Backend.Database.Table
             using var context = CreateContext();
             if (!hard)
             {
-                return UpdateProperty(id, u => u.Deleted, DateTime.Now);
+                return UpdateProperty(id, u => u.Deleted, DateTime.UtcNow);
             }
             var entity = context.Set<T>().Find(id);
             if (entity == null) return false;

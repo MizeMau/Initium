@@ -4,9 +4,12 @@ namespace Backend.Database
 {
     public class DBContext : DbContext
     {
+        /// <summary>
+        /// Still needs to be put in the environment variables
+        /// </summary>
         public static string ConnectionString { 
             get {
-                return "Server=MizeServerWindows;Database=Volgatus;User Id=Initium;Password=Initium;TrustServerCertificate=True;";
+                return "Host=WIN-ND6EUS8O78K;Port=5431;Username=Initium;Password=Initium;Database=postgres";
             } 
         }
 
@@ -28,7 +31,7 @@ namespace Backend.Database
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(ConnectionString);
+                optionsBuilder.UseNpgsql(ConnectionString);
             }
         }
     }
