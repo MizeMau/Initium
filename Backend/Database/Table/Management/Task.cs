@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Backend.Util;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,10 +8,12 @@ namespace Backend.Database.Table.Management
     public class Task
     {
         [Table("Task", Schema = "management")]
-        public class Model : BaseModel
+        public class Model : IDeleteable
         {
             [Key]
             public long ManagementTaskID { get; set; }
+            public DateTime Created { get; set; }
+            public DateTime? Deleted { get; set; }
             public int SortNumber { get; set; }
             /// <summary>
             /// nvarchar(128)
@@ -20,7 +23,7 @@ namespace Backend.Database.Table.Management
             /// nvarchar(MAX),
             /// saves HTML content from text field
             /// </summary>
-            public string Description { get; set; } = string.Empty;
+            public string? Description { get; set; }
             public bool IsCompleted { get; set; }
             public bool IsMilestone { get; set; }
             public DateTime? Start { get; set; }
@@ -28,6 +31,7 @@ namespace Backend.Database.Table.Management
             public long ManagementProjectID { get; set; }
             public long ManagementSectionID { get; set; }
             public long? ManagementTaskID_Head { get; set; }
+            public long BackendUserID_CreatedBy { get; set; }
         }
 
         public class DTO

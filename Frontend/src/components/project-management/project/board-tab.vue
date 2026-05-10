@@ -37,9 +37,10 @@
                          @end="onTaskDrop($event, section)">
                 <template #item="{ element: task }">
                   <div v-if="showCompleted  || !task.isCompleted"
-                       class="card container task-handle cursor-grab mb-2">
+                       class="card container task-handle cursor-grab mb-2"
+                       @click="taskClick(task)">
                     <div class="row">
-                      <div class="col-2 pe-0 w-auto mt-1">
+                      <div class="col-2 pe-0 w-auto mt-1 cursor-pointer">
                         <i v-if="!task.isCompleted"
                            class="bi bi-check-circle fs-6"
                            v-bind:class="task.isHoverDone ? 'text-success' : 'text-secondary'"
@@ -131,6 +132,8 @@
   import ManagementTaskService from '@/service/management/task'
   import type { ManagementTask, ManagementTaskFull } from '@/service/management/task'
 
+  const emit = defineEmits(['taskSelect'])
+
   const props = defineProps<{
     project: ManagementProjectFull
   }>()
@@ -194,7 +197,6 @@
     }
     const dbtask = await managementTaskService.create(task) as ManagementTaskFull
     dbtask.tasks = []
-    console.log('dbtask', dbtask)
     section.tasks.push(dbtask)
   }
 
@@ -212,6 +214,10 @@
 
     task!.tasks = tmpTasks
     value = task!
+  }
+
+  async function taskClick(task: ManagementTaskFull) {
+    emit('taskSelect', task)
   }
 
   async function onSectionReorder(event: any) {
@@ -245,11 +251,5 @@
 <style scoped>
   .width-300 {
     width: 300px !important;
-  }
-  .cursor-grab {
-    cursor: grab;
-  }
-  .sortable-ghost {
-    opacity: 0.4;
   }
 </style>

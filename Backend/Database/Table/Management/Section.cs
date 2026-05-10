@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Backend.Util;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Database.Table.Management
@@ -6,16 +7,19 @@ namespace Backend.Database.Table.Management
     public class Section
     {
         [Table("Section", Schema = "management")]
-        public class Model : BaseModel
+        public class Model : IDeleteable
         {
             [Key]
             public long ManagementSectionID { get; set; }
+            public DateTime Created { get; set; }
+            public DateTime? Deleted { get; set; }
             public int SortNumber { get; set; }
             /// <summary>
             /// nvarchar(64)
             /// </summary>
             public string Name { get; set; } = string.Empty;
             public long ManagementProjectID { get; set; }
+            public long BackendUserID_CreatedBy { get; set; }
         }
 
         public class DTO

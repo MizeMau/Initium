@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Backend.Util;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -75,7 +76,7 @@ namespace Backend.Database.Table
         public virtual T Create(T entity)
         {
             using var context = CreateContext();
-            entity.Created = DateTime.UtcNow;
+            entity.Created = DateTime.Now;
             context.Set<T>().Add(entity);
             context.SaveChanges();
             return entity;
@@ -127,7 +128,7 @@ namespace Backend.Database.Table
             using var context = CreateContext();
             if (!hard)
             {
-                return UpdateProperty(id, u => u.Deleted, DateTime.UtcNow);
+                return UpdateProperty(id, u => u.Deleted, DateTime.Now);
             }
             var entity = context.Set<T>().Find(id);
             if (entity == null) return false;

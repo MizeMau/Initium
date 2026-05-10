@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Backend.Util;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -7,10 +7,12 @@ namespace Backend.Database.Table.Backend
     public class User
     {
         [Table("User", Schema = "backend")]
-        public class Model : BaseModel
+        public class Model : IDeleteable
         {
             [Key]
             public long BackendUserID { get; set; }
+            public DateTime Created { get; set; }
+            public DateTime? Deleted { get; set;  }
             /// <summary>
             /// varchar(64)
             /// </summary>
@@ -27,7 +29,7 @@ namespace Backend.Database.Table.Backend
 
         public class DTO
         {
-            public class User : BaseModel
+            public class User
             {
                 public long BackendUserID { get; set; }
                 public string Username { get; set; } = string.Empty;

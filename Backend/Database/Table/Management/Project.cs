@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Backend.Util;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Database.Table.Management
@@ -6,10 +7,12 @@ namespace Backend.Database.Table.Management
     public class Project
     {
         [Table("Project", Schema = "management")]
-        public class Model : BaseModel
+        public class Model : IDeleteable
         {
             [Key]
             public long ManagementProjectID { get; set; }
+            public DateTime Created { get; set; }
+            public DateTime? Deleted { get; set; }
             /// <summary>
             /// nvarchar(64)
             /// </summary>

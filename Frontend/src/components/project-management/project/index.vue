@@ -5,20 +5,51 @@
     </h1>
     <hr />
     <nav>
-      <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <button class="nav-link" id="nav-list-tab" data-bs-toggle="tab" data-bs-target="#nav-list" type="button" role="tab" aria-controls="nav-list" aria-selected="false">List</button>
-        <button class="nav-link active" id="nav-board-tab" data-bs-toggle="tab" data-bs-target="#nav-board" type="button" role="tab" aria-controls="nav-board" aria-selected="true">Board</button>
+      <div class="nav nav-tabs" 
+           id="nav-tab" 
+           role="tablist">
+        <button class="nav-link" 
+                id="nav-list-tab" 
+                data-bs-toggle="tab" 
+                data-bs-target="#nav-list" 
+                type="button" 
+                role="tab" 
+                aria-controls="nav-list" 
+                aria-selected="false">
+          List
+        </button>
+        <button class="nav-link active" 
+                id="nav-board-tab" 
+                data-bs-toggle="tab" 
+                data-bs-target="#nav-board" 
+                type="button" 
+                role="tab" 
+                aria-controls="nav-board" 
+                aria-selected="true">
+          Board
+        </button>
       </div>
     </nav>
     <div v-if="project"
-         class="tab-content" id="nav-tabContent">
-      <div class="tab-pane fade" id="nav-list" role="tabpanel" aria-labelledby="nav-list-tab">
+         class="tab-content" 
+         id="nav-tabContent">
+      <div class="tab-pane fade" 
+           id="nav-list" 
+           role="tabpanel" 
+           aria-labelledby="nav-list-tab">
 
       </div>
-      <div class="tab-pane fade show active" id="nav-board" role="tabpanel" aria-labelledby="nav-board-tab">
-        <BoardTabComponent v-bind:project="project" />
+      <div class="tab-pane fade show active" 
+           id="nav-board" 
+           role="tabpanel" 
+           aria-labelledby="nav-board-tab">
+        <BoardTabComponent v-bind:project="project"
+                           @taskSelect="selectedTask = $event" />
       </div>
     </div>
+    <TaskEditComponent v-if="selectedTask"
+                       v-bind:task="selectedTask"
+                       @taskDeselect="selectedTask = null" />
   </div>
 </template>
 
@@ -27,14 +58,19 @@
   import { useRoute } from 'vue-router'
   import ManagementProjectService from '@/service/management/project'
   import type { ManagementProjectFull } from '@/service/management/project'
+  import type { ManagementTaskFull } from '@/service/management/task'
 
   import BoardTabComponent from './board-tab.vue'
+
+  import TaskEditComponent from './task-edit.vue'
 
   const route = useRoute()
 
   const managementProjectService = new ManagementProjectService()
 
   const project = ref<ManagementProjectFull>()
+
+  var selectedTask = ref<ManagementTaskFull>()
 
   onMounted(async () => {
     const managementProjectID: number = +route.params.id

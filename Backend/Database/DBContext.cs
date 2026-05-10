@@ -9,7 +9,7 @@ namespace Backend.Database
         /// </summary>
         public static string ConnectionString { 
             get {
-                return "Host=WIN-ND6EUS8O78K;Port=5431;Username=Initium;Password=Initium;Database=postgres";
+                return "Server=WIN-ND6EUS8O78K;Database=Volgatus;User Id=Initium;Password=Initium;TrustServerCertificate=True;";
             } 
         }
 
@@ -31,7 +31,7 @@ namespace Backend.Database
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql(ConnectionString);
+                optionsBuilder.UseSqlServer(ConnectionString);
             }
         }
     }

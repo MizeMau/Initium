@@ -77,6 +77,12 @@ namespace Backend.Controllers
         public IActionResult Section_POST(Database.Table.Management.Section.Model model)
         {
             var dbTablelManagementSectionService = new Database.Table.Management.Section.Service();
+
+            var userID = Util.Util.GetUserID(User);
+            if (!userID.HasValue) 
+                return Unauthorized();
+            model.BackendUserID_CreatedBy = userID.Value;
+
             var section = dbTablelManagementSectionService.Create(model);
             return Ok(section);
         }
@@ -112,6 +118,12 @@ namespace Backend.Controllers
         public IActionResult Task_POST(Database.Table.Management.Task.Model model)
         {
             var dbTablelManagementTaskService = new Database.Table.Management.Task.Service();
+
+            var userID = Util.Util.GetUserID(User);
+            if (!userID.HasValue)
+                return Unauthorized();
+            model.BackendUserID_CreatedBy = userID.Value;
+
             var task = dbTablelManagementTaskService.Create(model);
             return Ok(task);
         }
