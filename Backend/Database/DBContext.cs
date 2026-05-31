@@ -18,9 +18,14 @@ namespace Backend.Database
         #endregion
 
         #region Management
+        public DbSet<Table.Management.Comment.Model> ManagementComment { get; set; }
+        public DbSet<Table.Management.Field.Model> ManagementField { get; set; }
+        public DbSet<Table.Management.History.Model> ManagementHistory { get; set; }
         public DbSet<Table.Management.Project.Model> ManagementProject { get; set; }
+        public DbSet<Table.Management.Project_User.Model> ManagementProject_User { get; set; }
         public DbSet<Table.Management.Section.Model> ManagementSection { get; set; }
         public DbSet<Table.Management.Task.Model> ManagementTask { get; set; }
+        public DbSet<Table.Management.Task_User.Model> ManagementTask_User { get; set; }
         #endregion
 
         public DBContext() { }

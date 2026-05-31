@@ -1,2 +1,2 @@
+::npm update
 npm run dev
-pause

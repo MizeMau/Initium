@@ -14,7 +14,7 @@
               v-bind:maxlength="maxlength"
               v-bind:readonly="!edit"
               class="form-control"
-              v-bind:class="{'border-0 bg-transparent cursor-pointer': !edit}"
+              v-bind:class="textareaClass"
               v-bind:placeholder="placeholder"
               @mousedown="blockFocus"
               @blur="disableEdit()" 
@@ -25,19 +25,29 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, nextTick, onMounted } from 'vue'
+  import { ref, nextTick, onMounted, computed } from 'vue'
   const emit = defineEmits(['update'])
 
   const model = defineModel<string>()
 
-  defineProps<{
-    maxlength?: number | string
-    placeholder?: string
+  const props = defineProps<{
+    maxlength?: number | string,
+    placeholder?: string,
+    innerClass?: object,
   }>()
 
   const oldModel = ref<string | undefined>('')
   const edit = ref<boolean>(false)
   const inputEl = ref<HTMLInputElement | null>(null)
+
+  const textareaClass = computed(() => {
+    return {
+      ...props.innerClass,
+      'border-0': !edit.value,
+      'bg-transparent': !edit.value,
+      'cursor-pointer': !edit.value,
+    }
+  })
 
   onMounted(async () => {
     autoResize()

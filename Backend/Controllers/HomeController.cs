@@ -10,13 +10,13 @@ namespace Backend.Controllers
         [HttpGet("")]
         public IActionResult Index()
         {
-            var dbTablelManagementTaskService = new Database.Table.Management.Task.Service();
-            //var task = dbTablelManagementTaskService.GetById(10);
-            //var success = dbTablelManagementTaskService.UpdateSortNumber(task!, 1);
+            //var dbTablelManagementTaskService = new Database.Table.Management.Task.Service();
+            ////var task = dbTablelManagementTaskService.GetById(10);
+            ////var success = dbTablelManagementTaskService.UpdateSortNumber(task!, 1);
 
-            var success = dbTablelManagementTaskService.CalculateSortNumbers(1);
+            //var success = dbTablelManagementTaskService.CalculateSortNumbers(1);
 
-            return Ok(success);
+            return Ok();
         }
     }
 }

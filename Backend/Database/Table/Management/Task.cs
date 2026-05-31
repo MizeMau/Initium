@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace Backend.Database.Table.Management
 {
@@ -67,6 +69,11 @@ namespace Backend.Database.Table.Management
 
                 return model;
             }
+            public override Model Update(Model entity)
+            {
+                entity = ExtractImages(entity);
+                return base.Update(entity);
+            }
             public List<Model> GetAllByProject(long managementProjectID)
             {
                 return GetQuery()
@@ -122,6 +129,34 @@ namespace Backend.Database.Table.Management
                     success &= UpdateProperty(id, u => u.SortNumber, increament * (i + 1));
                 }
                 return success;
+            }
+
+            public Model ExtractImages(Model model)
+            {
+                if (model.Description == null)
+                    return model;
+
+                string basePath = AppDomain.CurrentDomain.BaseDirectory;
+                string uploadPath = "uploads/management/task";
+                string uploadDir = Path.Combine(basePath, uploadPath);
+                Directory.CreateDirectory(uploadDir);
+
+                string pattern = @"<img\s[^>]*src=""data:image/(\w+);base64,([^""]+)""[^>]*>";
+
+                model.Description = Regex.Replace(model.Description, pattern, match =>
+                {
+                    string extension = match.Groups[1].Value;
+                    string base64 = match.Groups[2].Value;
+
+                    byte[] bytes = Convert.FromBase64String(base64);
+                    string filename = $"{Guid.NewGuid()}.{extension}";
+                    string filePath = Path.Combine(uploadDir, filename);
+                    File.WriteAllBytes(filePath, bytes);
+
+                    return $"<img src=\"/{uploadPath}/{filename}\" alt=\"\">";
+                });
+
+                return model;
             }
         }
     }
