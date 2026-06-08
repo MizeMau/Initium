@@ -28,6 +28,25 @@ namespace Backend.Database
         public DbSet<Table.Management.Task_User.Model> ManagementTask_User { get; set; }
         #endregion
 
+        #region Pokemon
+        public DbSet<Table.Pokemon.Ability.Model> PokemonAbility { get; set; }
+        public DbSet<Table.Pokemon.Encounter.Model> PokemonEncounter { get; set; }
+        public DbSet<Table.Pokemon.Evolution.Model> PokemonEvolution { get; set; }
+        public DbSet<Table.Pokemon.Item.Model> PokemonItem { get; set; }
+        public DbSet<Table.Pokemon.Location.Model> PokemonLocation { get; set; }
+        public DbSet<Table.Pokemon.Location_Item.Model> PokemonLocation_Item { get; set; }
+        public DbSet<Table.Pokemon.Location_Location.Model> PokemonLocation_Location { get; set; }
+        public DbSet<Table.Pokemon.Mode.Model> PokemonMode { get; set; }
+        public DbSet<Table.Pokemon.Move.Model> PokemonMove { get; set; }
+        public DbSet<Table.Pokemon.Pokemon.Model> PokemonPokemon { get; set; }
+        public DbSet<Table.Pokemon.Pokemon_Ability.Model> PokemonPokemon_Ability { get; set; }
+        public DbSet<Table.Pokemon.Pokemon_Move.Model> PokemonPokemon_Move { get; set; }
+        public DbSet<Table.Pokemon.Save.Model> PokemonSave { get; set; }
+        public DbSet<Table.Pokemon.Save_Pokemon.Model> PokemonSave_Pokemon { get; set; }
+        public DbSet<Table.Pokemon.Type.Model> PokemonType { get; set; }
+        public DbSet<Table.Pokemon.Type_Type.Model> PokemonType_Type { get; set; }
+        #endregion
+
         public DBContext() { }
         public DBContext(DbContextOptions<DBContext> options)
             : base(options) { }
