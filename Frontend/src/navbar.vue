@@ -20,6 +20,15 @@
           <span v-if="isExpanded" class="text-nowrap">Projects</span>
         </router-link>
       </li>
+
+      <li class="nav-item">
+        <router-link to="/pokemon/location/1" 
+                     class="nav-link d-flex align-items-center gap-2"
+                     v-bind:class="$route.path.startsWith('/pokemon') ? '' : 'text-body'">
+          <i class="bi bi-circle-half fs-4" style="transform: rotate(90deg);" />
+          <span v-if="isExpanded" class="text-nowrap">Pokemon</span>
+        </router-link>
+      </li>
     </ul>
 
     <ul class="nav flex-column mt-auto w-100">

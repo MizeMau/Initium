@@ -16,7 +16,7 @@ namespace Backend.Controllers
 
             //var success = dbTablelManagementTaskService.CalculateSortNumbers(1);
 
-            return Ok();
+            return Ok("Workes");
         }
     }
 }

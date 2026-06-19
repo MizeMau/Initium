@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Database.Table.Pokemon
 {
-    public class Encounter
+    public class Location_Pokemon
     {
         public enum Type
         {
@@ -17,11 +17,11 @@ namespace Backend.Database.Table.Pokemon
             RockSmash = 7,
             Cave = 8,
         }
-        [Table("Encounter", Schema = "pokemon")]
+        [Table("Location_Pokemon", Schema = "pokemon")]
         public class Model : IDeleteable
         {
             [Key]
-            public long PokemonEncounterID { get; set; }
+            public long PokemonLocation_PokemonID { get; set; }
             public long PokemonPokemonID { get; set; }
             public long PokemonLocationID { get; set; }
             public DateTime Created { get; set; }

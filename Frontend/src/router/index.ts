@@ -5,31 +5,43 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: '/',
-            name: 'home',
-            component: () => import('@/components/home/index.vue'),
+          path: '/',
+          name: 'home',
+          component: () => import('@/components/home/index.vue'),
         },
         {
-            path: '/project-management',
-            name: 'project-management',
-            component: () => import('@/components/project-management/index.vue'),
-            children: [
-                {
-                    path: 'home',
-                    name: 'project-management-home',
-                    component: () => import('@/components/project-management/home/index.vue'),
-                },
-                {
-                    path: 'project/:id',
-                    name: 'project-management-project',
-                    component: () => import('@/components/project-management/project/index.vue'),
-                },
-            ]
+          path: '/pokemon',
+          name: 'pokemon',
+          component: () => import('@/components/pokemon/index.vue'),
+          children: [
+            {
+              path: 'location/:id',
+              name: 'pokemon-location',
+              component: () => import('@/components/pokemon/location/index.vue'),
+            },
+          ]
         },
         {
-            path: '/login',
-            name: 'login',
-            component: () => import('@/components/login/index.vue'),
+          path: '/project-management',
+          name: 'project-management',
+          component: () => import('@/components/project-management/index.vue'),
+          children: [
+            {
+              path: 'home',
+              name: 'project-management-home',
+              component: () => import('@/components/project-management/home/index.vue'),
+            },
+            {
+              path: 'project/:id',
+              name: 'project-management-project',
+              component: () => import('@/components/project-management/project/index.vue'),
+            },
+          ]
+        },
+        {
+          path: '/login',
+          name: 'login',
+          component: () => import('@/components/login/index.vue'),
         },
     ],
 })

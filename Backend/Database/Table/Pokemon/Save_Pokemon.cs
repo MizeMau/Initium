@@ -19,7 +19,11 @@ namespace Backend.Database.Table.Pokemon
 
         public class Service : Service<Model>
         {
-
+            public bool Delete(long pokemonSaveID, long pokemonPokemonID, bool hard)
+            {
+                var model = GetQuery().Single(s => s.PokemonSaveID == pokemonSaveID && s.PokemonPokemonID == pokemonPokemonID);
+                return Delete(model.PokemonSave_PokemonID, hard);
+            }
         }
     }
 }

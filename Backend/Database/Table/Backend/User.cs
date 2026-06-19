@@ -36,7 +36,7 @@ namespace Backend.Database.Table.Backend
             }
         }
 
-        public class Service : Table.Service<Model>
+        public class Service : Service<Model>
         {
             public Model? GetByUsername(string username)
             {

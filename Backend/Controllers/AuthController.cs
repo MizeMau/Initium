@@ -35,7 +35,9 @@ namespace Backend.Controllers
         {
             var dbTableBackendUserService = new Database.Table.Backend.User.Service();
             var user = dbTableBackendUserService.GetByUsername(username);
-            byte[] salt = Convert.FromBase64String(user!.Salt);
+            if (user == null)
+                return Unauthorized();
+            byte[] salt = Convert.FromBase64String(user.Salt);
 
             string hashedPassword = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                 password: password,

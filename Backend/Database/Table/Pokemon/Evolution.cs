@@ -27,7 +27,35 @@ namespace Backend.Database.Table.Pokemon
 
         public class Service : Service<Model>
         {
+            public HashSet<long> GetFullEvolutionChain(long pokemonPokemonID)
+            {
+                var evolutions = GetAll();
+                return GetFullEvolutionChain(pokemonPokemonID, evolutions);
+            }
+            public HashSet<long> GetFullEvolutionChain(long pokemonPokemonID, List<Database.Table.Pokemon.Evolution.Model> allEvolutions)
+            {
+                var chain = new HashSet<long>();
+                var toVisit = new Queue<long>();
 
+                toVisit.Enqueue(pokemonPokemonID);
+
+                while (toVisit.Count > 0)
+                {
+                    var current = toVisit.Dequeue();
+                    if (!chain.Add(current)) // already visited, prevents infinite loops
+                        continue;
+
+                    // Walk forward — things this pokemon evolves into
+                    foreach (var evo in allEvolutions.Where(e => e.PokemonPokemonID_Base == current))
+                        toVisit.Enqueue(evo.PokemonPokemonID_Evolution);
+
+                    // Walk backward — things that evolve into this pokemon (pre-evolutions)
+                    foreach (var evo in allEvolutions.Where(e => e.PokemonPokemonID_Evolution == current))
+                        toVisit.Enqueue(evo.PokemonPokemonID_Base);
+                }
+
+                return chain;
+            }
         }
     }
 }

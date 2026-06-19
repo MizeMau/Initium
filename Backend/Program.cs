@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Net;
 using System.Security.Claims;
 
 namespace Backend
@@ -44,6 +45,11 @@ namespace Backend
 
             builder.Services.AddAuthorization();
 
+            List<string> localIPs = GetLocalIPAddress();
+            localIPs.Add("localhost");
+            localIPs.Add("127.0.0.1");
+            Console.WriteLine($"Allowing:\n\t{string.Join("\n\t", localIPs.Select(s => $"http://{s}:5173").ToArray())}");
+            Console.WriteLine();
             // ✅ Enable CORS
             builder.Services.AddCors(options =>
             {
@@ -51,7 +57,7 @@ namespace Backend
                     policy =>
                     {
                         policy
-                            .WithOrigins("http://localhost:5173")
+                            .WithOrigins(localIPs.Select(s => $"http://{s}:5173").ToArray())
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials();
@@ -70,6 +76,19 @@ namespace Backend
             app.MapControllers();
 
             app.Run();
+        }
+        static List<string> GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            var ipAddress = host.AddressList
+                .Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                .Select(s => s.ToString())
+                .ToList();
+
+            if (ipAddress == null)
+                throw new Exception("No IPv4 address found for this machine.");
+
+            return ipAddress;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Backend.Controllers
         [HttpGet("{**path}")]
         public IActionResult Get(string path)
         {
-             string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
             var fullPath = Path.Combine(basePath, "uploads", path);
 
             // Prevent directory traversal attacks

@@ -15,6 +15,7 @@ namespace Backend.Database.Table.Pokemon
             public DateTime? Deleted { get; set; }
             [MaxLength(64)]
             public string Name { get; set; } = string.Empty;
+            public long PokemonModeID { get; set; }
             public long BackendUserID { get; set; }
         }
 

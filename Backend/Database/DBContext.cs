@@ -30,7 +30,7 @@ namespace Backend.Database
 
         #region Pokemon
         public DbSet<Table.Pokemon.Ability.Model> PokemonAbility { get; set; }
-        public DbSet<Table.Pokemon.Encounter.Model> PokemonEncounter { get; set; }
+        public DbSet<Table.Pokemon.Location_Pokemon.Model> PokemonLocation_Pokemon { get; set; }
         public DbSet<Table.Pokemon.Evolution.Model> PokemonEvolution { get; set; }
         public DbSet<Table.Pokemon.Item.Model> PokemonItem { get; set; }
         public DbSet<Table.Pokemon.Location.Model> PokemonLocation { get; set; }
@@ -45,6 +45,9 @@ namespace Backend.Database
         public DbSet<Table.Pokemon.Save_Pokemon.Model> PokemonSave_Pokemon { get; set; }
         public DbSet<Table.Pokemon.Type.Model> PokemonType { get; set; }
         public DbSet<Table.Pokemon.Type_Type.Model> PokemonType_Type { get; set; }
+
+        public DbSet<View.Pokemon.Encounter.Model> PokemonEncounter { get; set; }
+        public DbSet<View.Pokemon.Route.Model> PokemonRoute { get; set; }
         #endregion
 
         public DBContext() { }

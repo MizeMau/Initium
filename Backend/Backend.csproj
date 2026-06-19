@@ -4,14 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyTitle>Initium - Backend</AssemblyTitle>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Database\View\**" />
-    <Content Remove="Database\View\**" />
-    <EmbeddedResource Remove="Database\View\**" />
-    <None Remove="Database\View\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.8" />

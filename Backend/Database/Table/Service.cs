@@ -6,73 +6,14 @@ using System.Linq.Expressions;
 
 namespace Backend.Database.Table
 {
-    public class Service<T> where T : class, IDeleteable
+    public class Service<T> : ServiceBase<T> where T : class, IDeleteable
     {
-        protected static DBContext CreateContext()
+        public override IQueryable<T> GetQuery(bool withDeleted = false)
         {
-            // Create a new instance of the DbContext
-            // You can configure options globally in DBContext itself (e.g. OnConfiguring)
-            return new DBContext();
-        }
-
-        protected DbContext _context;
-        public virtual IQueryable<T> GetQuery(bool withDeleted = false)
-        {
-            _context = CreateContext();
             if (withDeleted)
-                return _context.Set<T>().AsQueryable();
-            return _context.Set<T>().Where(w => w.Deleted == null).AsQueryable();
+                return base.GetQuery();
+            return base.GetQuery().Where(w => !w.Deleted.HasValue);
         }
-        public virtual IQueryable<T> GetQuery(HttpRequest? request, bool withDeleted = false)
-        {
-            var query = GetQuery(withDeleted);
-
-            if (request == null)
-                return query;
-
-            foreach (var (key, value) in request.Query)
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                    continue;
-
-                string modelKey = $"{key[0].ToString().ToUpper()}{key.Substring(1)}";
-                var property = typeof(T).GetProperty(modelKey);
-                if (property == null)
-                    continue;
-
-                var parameter = Expression.Parameter(typeof(T), "x");
-                var propertyAccess = Expression.Property(parameter, property);
-
-                var convertedValue = Convert.ChangeType(value.ToString(), property.PropertyType);
-
-                var constant = Expression.Constant(convertedValue);
-                var equality = Expression.Equal(propertyAccess, constant);
-                var lambda = Expression.Lambda<Func<T, bool>>(equality, parameter);
-
-                query = query.Where(lambda);
-            }
-
-            return query;
-        }
-
-        public virtual List<T> GetAll(bool withDeleted = false)
-        {
-            return GetQuery(withDeleted)
-                .ToList();
-        }
-
-        public virtual List<T> GetAll(HttpRequest request, bool withDeleted = false)
-        {
-            return GetQuery(request, withDeleted)
-                .ToList();
-        }
-
-        public virtual T? GetById(long id)
-        {
-            using var context = CreateContext();
-            return context.Set<T>().Find(id);
-        }
-
         public virtual T Create(T entity)
         {
             using var context = CreateContext();
@@ -135,6 +76,77 @@ namespace Backend.Database.Table
             context.Set<T>().Remove(entity);
             context.SaveChanges();
             return true;
+        }
+    }
+
+    public class ViewService<T> : ServiceBase<T> where T : class
+    {
+
+    }
+
+    public class ServiceBase<T> where T : class
+    {
+        protected static DBContext CreateContext()
+        {
+            // Create a new instance of the DbContext
+            // You can configure options globally in DBContext itself (e.g. OnConfiguring)
+            return new DBContext();
+        }
+
+        protected DbContext _context;
+        public virtual IQueryable<T> GetQuery(bool withDeleted = false)
+        {
+            _context = CreateContext();
+            return _context.Set<T>().AsQueryable();
+        }
+        public virtual IQueryable<T> GetQuery(HttpRequest? request, bool withDeleted = false)
+        {
+            var query = GetQuery(withDeleted);
+
+            if (request == null)
+                return query;
+
+            foreach (var (key, value) in request.Query)
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    continue;
+
+                string modelKey = $"{key[0].ToString().ToUpper()}{key.Substring(1)}";
+                var property = typeof(T).GetProperty(modelKey);
+                if (property == null)
+                    continue;
+
+                var parameter = Expression.Parameter(typeof(T), "x");
+                var propertyAccess = Expression.Property(parameter, property);
+
+                var convertedValue = Convert.ChangeType(value.ToString(), property.PropertyType);
+
+                var constant = Expression.Constant(convertedValue);
+                var equality = Expression.Equal(propertyAccess, constant);
+                var lambda = Expression.Lambda<Func<T, bool>>(equality, parameter);
+
+                query = query.Where(lambda);
+            }
+
+            return query;
+        }
+
+        public virtual List<T> GetAll(bool withDeleted = false)
+        {
+            return GetQuery(withDeleted)
+                .ToList();
+        }
+
+        public virtual List<T> GetAll(HttpRequest request, bool withDeleted = false)
+        {
+            return GetQuery(request, withDeleted)
+                .ToList();
+        }
+
+        public virtual T? GetById(long id)
+        {
+            using var context = CreateContext();
+            return context.Set<T>().Find(id);
         }
     }
 }

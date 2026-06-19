@@ -7,7 +7,7 @@ export default class Service<TDefault> {
     constructor(path: string, key: string) {
         this.key = key
         this.api = axios.create({
-            baseURL: `http://localhost:5045${path}`,
+            baseURL: `http://${window.location.hostname}:5045${path}`,
             headers: {
                 'Content-Type': 'application/json',
             },
