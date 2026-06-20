@@ -22,7 +22,7 @@ namespace Backend.Database.Table.Pokemon
         {
             public class Location : Model
             {
-                public List<View.Pokemon.Encounter.DTO.Encounter> Encounter { get; set; } = new();
+                public List<View.Pokemon.Encounter.Model> Encounter { get; set; } = new();
                 public List<View.Pokemon.Route.Model> Routes { get; set; } = new();
             }
         }

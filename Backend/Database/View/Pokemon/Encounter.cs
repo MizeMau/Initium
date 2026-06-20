@@ -34,14 +34,8 @@ namespace Backend.Database.View.Pokemon
             [MaxLength(64)]
             public string PokemonLocationName_Best { get; set; } = string.Empty;
             public int? AVGEncounterPercentage_Best { get; set; }
-        }
-
-        public class DTO
-        {
-            public class Encounter : Model
-            {
-                public bool IsCaught { get; set; }
-            }
+            [NotMapped]
+            public bool IsCaught { get; set; }
         }
 
         public class Service : ViewService<Model>

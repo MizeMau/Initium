@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Nodes;
 
 namespace Backend.Controllers
 {
@@ -12,6 +13,14 @@ namespace Backend.Controllers
         public IActionResult Pokemon_GET()
         {
             return Ok();
+        }
+
+        [HttpGet("Location")]
+        public IActionResult Location_Get()
+        {
+            var pokemonLocationService = new Database.Table.Pokemon.Location.Service();
+            var locations = pokemonLocationService.GetAll(Request);
+            return Ok(locations);
         }
 
         [HttpGet("Location/{pokemonLocationID}")]
@@ -33,8 +42,7 @@ namespace Backend.Controllers
                 return NoContent();
             var location = Util.Converter.Convert<Database.Table.Pokemon.Location.DTO.Location>(dblocation);
 
-            var encounter = pokemonEncounterService.GetAll(pokemonLocationID, save.PokemonModeID);
-            location.Encounter = Util.Converter.Convert<Database.View.Pokemon.Encounter.DTO.Encounter>(encounter);
+            location.Encounter = pokemonEncounterService.GetAll(pokemonLocationID, save.PokemonModeID);
 
             var caughtPokemonIDs = pokemonSave_PokemonService.GetQuery()
                 .Where(w => w.PokemonSaveID == pokemonSaveID)
@@ -53,13 +61,19 @@ namespace Backend.Controllers
 
             return Ok(location);
         }
+        [HttpPost("Location/Location")]
+        public IActionResult Location_Location_Post([FromBody] JsonObject model)
+        {
+            var pokemonLocation_LocationService = new Database.Table.Pokemon.Location_Location.Service();
+            return Ok(pokemonLocation_LocationService.ValidateAndCreate(model));
+        }
 
         [HttpPost("Save/Pokemon")]
         public IActionResult Save_Pokemon_Post([FromBody] Database.Table.Pokemon.Save_Pokemon.Model model)
         {
             var pokemonSave_PokemonService = new Database.Table.Pokemon.Save_Pokemon.Service();
-            var save_pokemon = pokemonSave_PokemonService.Create(model);
-            return Ok(save_pokemon);
+            var save_Pokemon = pokemonSave_PokemonService.Create(model);
+            return Ok(save_Pokemon);
         }
         [HttpDelete("Save/Pokemon")]
         public IActionResult Save_Pokemon_Delete([FromQuery] long pokemonPokemonID, [FromQuery] long pokemonSaveID)

@@ -30,7 +30,7 @@
                 <tr>
                   <th colspan="10"
                       class="text-center"
-                      v-bind:style="{'background-color': PokemonLocation_PokemonService.getTypeHex(key)}">
+                      v-bind:style="{'background-color': PokemonEncounterService.getTypeHex(key)}">
                     {{key}}
                   </th>
                 </tr>
@@ -41,7 +41,7 @@
                   </th>
                   <th v-bind:class="{'bg-success': encounter.isCaught}">
                     <button class="btn"
-                            @click="onPokemonClick(encounter)">
+                            @click="caughtPokemon(encounter)">
                       {{encounter.pokemonName}}
                     </button>
                   </th>
@@ -130,17 +130,17 @@
           <table class="table table-bordered">
             <tbody>
               <tr>
-                <td colspan="2" 
+                <td colspan="2"
                     class="p-0 rounded-top-1">
-                  <img class="img-fluid rounded-top-1" 
-                       v-bind:src="`http://localhost:5045/uploads/pokemon/location/${location.pokemonLocationID}.webp`"
-                       alt="todo Image"/>
+                  <img class="img-fluid rounded-top-1"
+                       v-bind:src="`http://${url}:5045/uploads/pokemon/location/${location.pokemonLocationID}.webp`"
+                       v-bind:alt="`todo Image - ${location.pokemonLocationID}`" />
                 </td>
               </tr>
               <tr v-for="pokemonRoute in location.routes">
                 <td>
-                  <i class="bi" 
-                     v-bind:class="PokemonRouteService.getDirectionIcon(pokemonRoute.direction)"/>
+                  <i class="bi"
+                     v-bind:class="PokemonRouteService.getDirectionIcon(pokemonRoute.direction)" />
                 </td>
                 <td>
                   <router-link v-bind:to="`/pokemon/location/${pokemonRoute.pokemonLocationID_To}`"
@@ -152,10 +152,22 @@
                   </small>
                 </td>
               </tr>
+              <tr>
+                <td colspan="2">
+                  <button type="button"
+                          class="btn btn-primary container-fluid"
+                          data-bs-toggle="modal"
+                          data-bs-target="#locationJunctionModal">
+                    Edit connected connections
+                  </button>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
+      <LocationJunctionModal v-bind:location="location"
+                             @updateLocation="getData"/>
     </div>
   </div>
 </template>
@@ -165,17 +177,20 @@
   import { useRoute } from 'vue-router'
   import PokemonLocationService from '@/service/pokemon/location'
   import type { PokemonLocationFull } from '@/service/pokemon/location'
-  import PokemonLocation_PokemonService from '@/service/pokemon/location_pokemon'
-  import type { PokemonLocation_Pokemon } from '@/service/pokemon/location_pokemon'
+  import PokemonEncounterService from '@/service/pokemon/encounter'
+  import type { PokemonEncounter } from '@/service/pokemon/encounter'
   import PokemonTypeService from '@/service/pokemon/type'
-  import PokemonSave_PokemonService from '@/service/pokemon/save_pokemon'
-  import type { PokemonSave_Pokemon } from '@/service/pokemon/save_pokemon'
+  import PokemonSaveService from '@/service/pokemon/save'
+  import type { PokemonSave_Pokemon } from '@/service/pokemon/save'
   import PokemonRouteService from '@/service/pokemon/route'
 
+  import LocationJunctionModal from './location-junction-modal.vue'
+
   const route = useRoute()
+  const url = window.location.hostname
 
   const pokemonLocationService = new PokemonLocationService()
-  const pokemonSave_PokemonService = new PokemonSave_PokemonService()
+  const pokemonSaveService = new PokemonSaveService()
 
   const location = ref<PokemonLocationFull>()
   const encounters = ref<object>()
@@ -193,27 +208,27 @@
     if (pokemonLocationID == null) return
     const tmp = await pokemonLocationService.getFullByLocation(pokemonLocationID)
 
-    encounters.value = Object.groupBy(tmp.encounter, g => PokemonLocation_PokemonService.getTypeName(g.type))
+    encounters.value = Object.groupBy(tmp.encounter, g => PokemonEncounterService.getTypeName(g.type))
     location.value = tmp
   }
 
-  async function onPokemonClick(encounter: PokemonLocation_Pokemon) {
+  async function caughtPokemon(encounter: PokemonEncounter) {
     var success;
     if (!encounter.isCaught) {
-      success = await pokemonSave_PokemonService.create({
+      success = await pokemonSaveService.createPokemonJunction({
         pokemonPokemonID: encounter.pokemonPokemonID,
-        pokemonSaveID: 1
+        pokemonSaveID: 1,
       }) 
     }
     else {
       var sure = confirm("Did you set him free?")
       if (!sure)
         return;
-      success = await pokemonSave_PokemonService.deleteEntry(encounter.pokemonPokemonID, 1)
+      success = await pokemonSaveService.deletePokemonJunction(encounter.pokemonPokemonID, 1)
     }
     if (success) {
       for (let key of Object.keys(encounters.value)) {
-        for (let encounterItem of encounters.value[key] as PokemonLocation_Pokemon[]) {
+        for (let encounterItem of encounters.value[key] as PokemonEncounter[]) {
           if (encounterItem.pokemonPokemonID != encounter.pokemonPokemonID)
             continue
           encounterItem.isCaught = !encounterItem.isCaught

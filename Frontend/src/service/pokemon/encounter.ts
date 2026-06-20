@@ -1,6 +1,6 @@
 ﻿import Service from '../service';
 
-export interface PokemonLocation_Pokemon {
+export interface PokemonEncounter {
   pokemonLocation_PokemonID: number
   pokemonPokemonID: number
   pokemonLocationID: number
@@ -22,7 +22,7 @@ export interface PokemonLocation_Pokemon {
   isCaught: boolean
 }
 
-export default class PokemonLocation_PokemonService extends Service<PokemonLocation_Pokemon> {
+export default class PokemonEncounterService extends Service<PokemonEncounter> {
   constructor() {
     super('/pokemon/encounter', 'pokemonLocation_PokemonID')
   }
