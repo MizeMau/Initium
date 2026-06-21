@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import router from '@/router'
 import UserService from '@/service/auth/user'
 import type { User } from '@/service/auth/user'
+import { sha256 } from 'js-sha256'
 
 export const useUserStore = defineStore('user', () => {
     const user = ref<User | null>(null)
@@ -14,7 +15,7 @@ export const useUserStore = defineStore('user', () => {
         error.value = null
         try {
             const api = new UserService()
-            const hashedPassword = await hashPassword(password)
+            const hashedPassword = sha256(password)
             const result = await api.login(username, hashedPassword)
             user.value = result
         } catch (err) {
@@ -24,15 +25,6 @@ export const useUserStore = defineStore('user', () => {
         } finally {
             loading.value = false
         }
-    }
-
-    async function hashPassword(password: string): Promise<string> {
-        const encoder = new TextEncoder()
-        const data = encoder.encode(password)
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-        return Array.from(new Uint8Array(hashBuffer))
-            .map(b => b.toString(16).padStart(2, '0'))
-            .join('')
     }
 
     async function logout(): Promise<void> {
